@@ -54,6 +54,12 @@ public class HadoopFileSystem implements FileSystem {
         this.ensureInitialized();
         try {
             Configuration conf = new Configuration(true);
+            conf.set("fs.hdfs.impl",
+                    org.apache.hadoop.hdfs.DistributedFileSystem.class.getName()
+            );
+            conf.set("fs.file.impl",
+                    org.apache.hadoop.fs.LocalFileSystem.class.getName()
+            );
             return org.apache.hadoop.fs.FileSystem.get(new URI(uri), conf);
         } catch (IOException | URISyntaxException e) {
             throw new RheemException(String.format("Could not obtain an HDFS client for %s.", uri), e);
