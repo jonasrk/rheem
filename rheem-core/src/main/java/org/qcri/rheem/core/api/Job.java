@@ -247,7 +247,7 @@ public class Job extends OneTimeExecutable {
             ExecutionPlan executionPlan = this.createInitialExecutionPlan();
             this.optimizationRound.stop();
 
-            // TODO: generate run ID. For now we fix this because we can't handle multiple jobs, neither in montoring nor execution.
+            // TODO: generate run ID. For now we fix this because we can't handle multiple jobs, neither in monitoring nor execution.
             String runId = "1";
             try {
                 monitor.initialize(this.configuration, runId, executionPlan.toJsonList());
