@@ -1,11 +1,13 @@
 package org.qcri.rheem.core.profiling;
 
+import com.sun.tools.internal.ws.wsdl.document.jaxws.Exception;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.qcri.rheem.core.api.Configuration;
 import org.qcri.rheem.core.api.exception.RheemException;
 import org.qcri.rheem.core.optimizer.OptimizationContext;
+import org.qcri.rheem.core.optimizer.OptimizationUtils;
 import org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimate;
 import org.qcri.rheem.core.plan.rheemplan.InputSlot;
 import org.qcri.rheem.core.plan.rheemplan.Operator;
@@ -17,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.lang.reflect.Method;
 
 /**
  * Stores cardinalities that have been collected by the {@link CrossPlatformExecutor}. Current version uses
@@ -54,29 +57,51 @@ public class CardinalityRepository {
     public void storeAll(ExecutionState executionState, OptimizationContext optimizationContext) {
         this.logger.info("Storing cardinalities at {}.", this.repositoryPath);
 
-//        executionState.getCardinalityMeasurements().forEach(
-//                channelInstance -> {
-//                    for (Slot<?> correspondingSlot : channelInstance.getChannel().getCorrespondingSlots()) {
-//                        for (Slot<?> slot : OptimizationUtils.collectConnectedSlots(correspondingSlot)) {
-//                            if (slot instanceof OutputSlot<?>) {
-//                                OutputSlot<Object> outputSlot = ((OutputSlot<?>) slot).unchecked();
-//                                final Operator operator = outputSlot.getOwner();
-//                                if (!operator.isElementary() || operator.isSource()) {
-//                                    continue;
-//                                }
-//                                final OptimizationContext.OperatorContext operatorContext = channelInstance.getProducerOperatorContext();
-//                                if (operatorContext == null) {
-//                                    // TODO: Handle cardinalities inside of loops.
-//                                    this.logger.debug("Could not inject measured cardinality for {}: " +
-//                                            "It is presumably a glue operator or inside of a loop.", operator);
-//                                    continue;
-//                                }
-//                                this.store(outputSlot, channelInstance.getMeasuredCardinality().getAsLong(), operatorContext);
-//                            }
-//                        }
-//                    }
-//                });
-        this.logger.warn("Cardinality repository currently disabled.");
+        executionState.getCardinalityMeasurements().forEach(
+                channelInstance -> {
+                    for (Slot<?> correspondingSlot : channelInstance.getChannel().getCorrespondingSlots()) {
+                        for (Slot<?> slot : OptimizationUtils.collectConnectedSlots(correspondingSlot)) {
+                            if (slot instanceof OutputSlot<?>) {
+                                OutputSlot<Object> outputSlot = ((OutputSlot<?>) slot).unchecked();
+                                final Operator operator = outputSlot.getOwner();
+                                if (!operator.isElementary() || operator.isSource()) {
+                                    continue;
+                                }
+                                final OptimizationContext.OperatorContext operatorContext = channelInstance.getProducerOperatorContext();
+                                if (operatorContext == null) {
+                                    // TODO: Handle cardinalities inside of loops.
+                                    this.logger.debug("Could not inject measured cardinality for {}: " +
+                                            "It is presumably a glue operator or inside of a loop.", operator);
+                                    continue;
+                                }
+                                Method methodToFind = null;
+                                try {
+                                    methodToFind = operatorContext.getOperator().getClass().getMethod("getInputUrl", (Class<?>[]) null);
+
+                                } catch (NoSuchMethodException | SecurityException e) {
+                                    // Your exception handling goes here
+                                }
+                                if (methodToFind == null) {
+                                    this.store(outputSlot, channelInstance.getMeasuredCardinality().getAsLong(), operatorContext);
+                                } else {
+                                    // Method found. You can invoke the method like
+                                    try {
+                                        String filename = (String) methodToFind.invoke(operatorContext.getOperator(), (Object[]) null);
+                                        this.storeWithFileName(outputSlot, channelInstance.getMeasuredCardinality().getAsLong(), operatorContext, filename);
+                                    } catch (java.lang.IllegalAccessException e) {
+                                        System.out.println(e);
+                                    } catch (java.lang.reflect.InvocationTargetException e) {
+                                        System.out.println(e);
+                                    }
+
+
+                                }
+                            }
+                        }
+                    }
+                });
+//        this.logger.warn("Cardinality repository currently disabled.");
+
     }
 
     /**
@@ -94,6 +119,67 @@ public class CardinalityRepository {
         this.write(operatorContext, output, cardinality);
     }
 
+    /**
+     * Stores the {@code cardinality} for the {@code output} together with its {@link Operator} and input
+     * {@link CardinalityEstimate}s.
+     */
+    public void storeWithFileName(OutputSlot<?> output, long cardinality, OptimizationContext.OperatorContext operatorContext, String filename) {
+        assert output.getOwner() == operatorContext.getOperator() :
+                String.format("Owner of %s is not %s.", output, operatorContext.getOperator());
+        if (!operatorContext.getOutputCardinality(output.getIndex()).isExactly(cardinality)) {
+            this.logger.error("Expected a measured cardinality of {} for {}; found {}.",
+                    cardinality, output, operatorContext.getOutputCardinality(output.getIndex()));
+        }
+
+        this.writeWithFileName(operatorContext, output, cardinality, filename);
+    }
+
+    private void writeWithFileName(OptimizationContext.OperatorContext operatorContext,
+                                   OutputSlot<?> output,
+                                   long outputCardinality,
+                                   String filename) {
+
+        JSONArray jsonInputCardinalities = new JSONArray();
+        final Operator operator = operatorContext.getOperator();
+        for (int inputIndex = 0; inputIndex < operator.getNumInputs(); inputIndex++) {
+            final InputSlot<?> input = operator.getInput(inputIndex);
+            final CardinalityEstimate inputEstimate = operatorContext.getInputCardinality(inputIndex);
+
+
+
+            JSONObject jsonInputCardinality = new JSONObject();
+            jsonInputCardinality.put("name", input.getName());
+            jsonInputCardinality.put("index", input.getIndex());
+            jsonInputCardinality.put("isBroadcast", input.isBroadcast());
+            if (inputEstimate != null){
+                jsonInputCardinality.put("lowerBound", inputEstimate.getLowerEstimate());
+            } else {
+                System.out.println("Null!!");
+                CardinalityEstimate inputEstimate2 = operatorContext.getInputCardinality(inputIndex);
+            }
+            jsonInputCardinality.put("upperBound", inputEstimate.getUpperEstimate());
+            jsonInputCardinality.put("confidence", inputEstimate.getCorrectnessProbability());
+            jsonInputCardinalities.put(jsonInputCardinality);
+        }
+
+        JSONObject jsonOperator = new JSONObject();
+        jsonOperator.put("class", operator.getClass().getCanonicalName());
+        jsonOperator.put("filename", filename);
+        // TODO: UDFs? How can we reference them?
+
+        JSONObject jsonOutput = new JSONObject();
+        jsonOutput.put("name", output.getName());
+        jsonOutput.put("index", output.getIndex());
+        jsonOutput.put("cardinality", outputCardinality);
+
+        JSONObject jsonMeasurement = new JSONObject();
+        jsonMeasurement.put("inputs", jsonInputCardinalities);
+        jsonMeasurement.put("operator", jsonOperator);
+        jsonMeasurement.put("output", jsonOutput);
+
+        this.write(jsonMeasurement);
+    }
+
     private void write(OptimizationContext.OperatorContext operatorContext,
                        OutputSlot<?> output,
                        long outputCardinality) {
@@ -104,11 +190,18 @@ public class CardinalityRepository {
             final InputSlot<?> input = operator.getInput(inputIndex);
             final CardinalityEstimate inputEstimate = operatorContext.getInputCardinality(inputIndex);
 
+
+
             JSONObject jsonInputCardinality = new JSONObject();
             jsonInputCardinality.put("name", input.getName());
             jsonInputCardinality.put("index", input.getIndex());
             jsonInputCardinality.put("isBroadcast", input.isBroadcast());
-            jsonInputCardinality.put("lowerBound", inputEstimate.getLowerEstimate());
+            if (inputEstimate != null){
+                jsonInputCardinality.put("lowerBound", inputEstimate.getLowerEstimate());
+            } else {
+                System.out.println("Null!!");
+                CardinalityEstimate inputEstimate2 = operatorContext.getInputCardinality(inputIndex);
+            }
             jsonInputCardinality.put("upperBound", inputEstimate.getUpperEstimate());
             jsonInputCardinality.put("confidence", inputEstimate.getCorrectnessProbability());
             jsonInputCardinalities.put(jsonInputCardinality);
