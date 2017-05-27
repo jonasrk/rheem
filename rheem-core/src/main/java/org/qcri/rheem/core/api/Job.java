@@ -252,7 +252,7 @@ public class Job extends OneTimeExecutable {
             try {
                 monitor.initialize(this.configuration, runId, executionPlan.toJsonList());
             }catch (Exception e) {
-                this.logger.warn("Failed to initalize monitor: {}", e);
+                this.logger.warn("Failed to initialize monitor: {}", e);
             }
 
 
