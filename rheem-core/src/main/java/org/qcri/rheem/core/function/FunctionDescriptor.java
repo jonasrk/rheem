@@ -23,6 +23,11 @@ public abstract class FunctionDescriptor {
         this.setLoadProfileEstimator(loadProfileEstimator);
     }
 
+    public FunctionDescriptor(LoadProfileEstimator loadProfileEstimator,
+                              LoadProfileEstimator selectivityProfileEstimator) {
+        this.setLoadProfileEstimator(loadProfileEstimator);
+    }
+
     public void setLoadProfileEstimator(LoadProfileEstimator loadProfileEstimator) {
         this.loadProfileEstimator = loadProfileEstimator;
     }

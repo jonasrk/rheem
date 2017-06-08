@@ -169,7 +169,7 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
                  udfLoad: LoadProfileEstimator = null,
                  udfSelectivity: LoadProfileEstimator = null): DataQuanta[Out] = {
     val filterOperator = new FilterOperator(new PredicateDescriptor(
-      udf, this.output.getType.getDataUnitType.toBasicDataUnitType, selectivity, udfLoad
+      udf, this.output.getType.getDataUnitType.toBasicDataUnitType, selectivity, udfLoad, udfSelectivity
     ).withSqlImplementation(sqlUdf))
     this.connectTo(filterOperator, 0)
     filterOperator
