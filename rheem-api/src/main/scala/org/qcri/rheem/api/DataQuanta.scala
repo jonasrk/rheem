@@ -136,6 +136,13 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
              udfLoad: LoadProfileEstimator = null) =
     filterJava(toSerializablePredicate(udf), sqlUdf, selectivity, udfLoad)
 
+  def filterRepo(udf: Out => Boolean,
+             sqlUdf: String = null,
+             selectivity: ProbabilisticDoubleInterval = null,
+             udfLoad: LoadProfileEstimator = null,
+             udfSelectivity: LoadProfileEstimator = null) =
+    filterJava(toSerializablePredicate(udf), sqlUdf, selectivity, udfLoad)
+
   /**
     * Feed this instance into a [[FilterOperator]].
     *
