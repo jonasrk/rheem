@@ -18,6 +18,7 @@ import java.util.function.Predicate;
 public abstract class FunctionDescriptor {
 
     private LoadProfileEstimator loadProfileEstimator;
+    private LoadProfileEstimator selectivityProfileEstimator;
 
     public FunctionDescriptor(LoadProfileEstimator loadProfileEstimator) {
         this.setLoadProfileEstimator(loadProfileEstimator);
@@ -26,10 +27,15 @@ public abstract class FunctionDescriptor {
     public FunctionDescriptor(LoadProfileEstimator loadProfileEstimator,
                               LoadProfileEstimator selectivityProfileEstimator) {
         this.setLoadProfileEstimator(loadProfileEstimator);
+        this.setSelectivityProfileEstimator(selectivityProfileEstimator);
     }
 
     public void setLoadProfileEstimator(LoadProfileEstimator loadProfileEstimator) {
         this.loadProfileEstimator = loadProfileEstimator;
+    }
+
+    public void setSelectivityProfileEstimator(LoadProfileEstimator selectivityProfileEstimator) {
+        this.selectivityProfileEstimator = selectivityProfileEstimator;
     }
 
     public Optional<LoadProfileEstimator> getLoadProfileEstimator() {
