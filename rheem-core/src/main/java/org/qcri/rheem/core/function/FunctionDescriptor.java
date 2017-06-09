@@ -38,6 +38,10 @@ public abstract class FunctionDescriptor {
         this.selectivityProfileEstimator = selectivityProfileEstimator;
     }
 
+    public Optional<LoadProfileEstimator> getSelectivityProfileEstimator() {
+        return Optional.ofNullable(this.selectivityProfileEstimator);
+    }
+
     public Optional<LoadProfileEstimator> getLoadProfileEstimator() {
         return Optional.ofNullable(this.loadProfileEstimator);
     }
