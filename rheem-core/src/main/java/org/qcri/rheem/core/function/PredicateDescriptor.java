@@ -62,7 +62,7 @@ public class PredicateDescriptor<Input> extends FunctionDescriptor {
                                BasicDataUnitType<Input> inputType,
                                ProbabilisticDoubleInterval selectivity,
                                LoadProfileEstimator loadProfileEstimator,
-                               LoadProfileEstimator selectivityProfileEstimator) {
+                               ProbabilisticDoubleInterval selectivityProfileEstimator) {
         super(loadProfileEstimator, selectivityProfileEstimator);
         this.javaImplementation = javaImplementation;
         this.inputType = inputType;

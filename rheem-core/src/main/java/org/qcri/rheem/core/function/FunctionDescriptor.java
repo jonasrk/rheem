@@ -18,14 +18,14 @@ import java.util.function.Predicate;
 public abstract class FunctionDescriptor {
 
     private LoadProfileEstimator loadProfileEstimator;
-    private LoadProfileEstimator selectivityProfileEstimator;
+    private static ProbabilisticDoubleInterval selectivityProfileEstimator;
 
     public FunctionDescriptor(LoadProfileEstimator loadProfileEstimator) {
         this.setLoadProfileEstimator(loadProfileEstimator);
     }
 
     public FunctionDescriptor(LoadProfileEstimator loadProfileEstimator,
-                              LoadProfileEstimator selectivityProfileEstimator) {
+                              ProbabilisticDoubleInterval selectivityProfileEstimator) {
         this.setLoadProfileEstimator(loadProfileEstimator);
         this.setSelectivityProfileEstimator(selectivityProfileEstimator);
     }
@@ -34,12 +34,12 @@ public abstract class FunctionDescriptor {
         this.loadProfileEstimator = loadProfileEstimator;
     }
 
-    public void setSelectivityProfileEstimator(LoadProfileEstimator selectivityProfileEstimator) {
+    public void setSelectivityProfileEstimator(ProbabilisticDoubleInterval selectivityProfileEstimator) {
         this.selectivityProfileEstimator = selectivityProfileEstimator;
     }
 
-    public Optional<LoadProfileEstimator> getSelectivityProfileEstimator() {
-        return Optional.ofNullable(this.selectivityProfileEstimator);
+    public static Optional<ProbabilisticDoubleInterval> getSelectivityProfileEstimator() {
+        return Optional.ofNullable(selectivityProfileEstimator);
     }
 
     public Optional<LoadProfileEstimator> getLoadProfileEstimator() {
