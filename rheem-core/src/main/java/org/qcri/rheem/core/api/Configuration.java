@@ -314,11 +314,11 @@ public class Configuration {
                     new FunctionalKeyValueProvider<FunctionDescriptor, ProbabilisticDoubleInterval>(
                             functionDescriptor -> {
                                 if (functionDescriptor instanceof PredicateDescriptor) {
-                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
+                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d, "");
                                 } else if (functionDescriptor instanceof FlatMapDescriptor) {
-                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
+                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d, "");
                                 } else if (functionDescriptor instanceof MapPartitionsDescriptor) {
-                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
+                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d, "");
                                 } else {
                                     throw new RheemException("Cannot provide fallback selectivity for " + functionDescriptor);
                                 }
@@ -330,7 +330,7 @@ public class Configuration {
             KeyValueProvider<FunctionDescriptor, ProbabilisticDoubleInterval> builtInProvider =
                     new FunctionalKeyValueProvider<>(
                             fallbackProvider,
-                            functionDescriptor -> functionDescriptor.getSelectivityProfileEstimator().orElse(null)
+                            functionDescriptor -> functionDescriptor.getSelectivityProfileEstimator()
                     );
 
             //

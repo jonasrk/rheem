@@ -45,6 +45,11 @@ public class SimpleEstimationContext implements EstimationContext {
     }
 
     @Override
+    public String getSelectivityKey() {
+        return "";
+    }
+
+    @Override
     public double getDoubleProperty(String propertyKey, double fallback) {
         return this.doubleProperties.containsKey(propertyKey) ?
                 this.doubleProperties.get(propertyKey) :

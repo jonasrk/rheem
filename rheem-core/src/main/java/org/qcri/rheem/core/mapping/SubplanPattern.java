@@ -18,6 +18,10 @@ public class SubplanPattern extends OperatorBase {
      */
     private final OperatorPattern inputPattern, outputPattern;
 
+    public String getSelectKeyString(){
+        return "";
+    }
+
     /**
      * Creates a new instance that matches only a single operator.
      *

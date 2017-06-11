@@ -17,6 +17,10 @@ public class OperatorPattern<T extends Operator> extends OperatorBase {
      */
     private final String name;
 
+    public String getSelectKeyString(){
+        return "";
+    }
+
     /**
      * {@link Operator} type matched by this instance.
      */

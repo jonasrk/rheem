@@ -3,18 +3,12 @@ package org.qcri.rheem.core.optimizer;
 import org.json.JSONObject;
 import org.qcri.rheem.core.api.Configuration;
 import org.qcri.rheem.core.api.exception.RheemException;
-import org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimate;
 import org.qcri.rheem.core.optimizer.costs.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.ToDoubleBiFunction;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /***
  * An value representation that is capable of expressing uncertainty.
@@ -46,6 +40,11 @@ public class ProbabilisticDoubleInterval {
      */
     private final boolean isOverride;
 
+
+    public final String keyString;
+
+
+
     /**
      * Creates a new instance with a zero-width interval and a confidence of {@code 1}.
      *
@@ -53,7 +52,7 @@ public class ProbabilisticDoubleInterval {
      * @return the new instance
      */
     public static ProbabilisticDoubleInterval ofExactly(double value) {
-        return new ProbabilisticDoubleInterval(value, value, 1d);
+        return new ProbabilisticDoubleInterval(value, value, 1d, "");
     }
 
     public static ProbabilisticDoubleInterval createFromSpecification(String configKey, Configuration configuration) {
@@ -91,14 +90,15 @@ public class ProbabilisticDoubleInterval {
         double lower = spec.getDouble("lower");
         double upper = spec.getDouble("upper");
 
-        return new ProbabilisticDoubleInterval(lower, upper, correctnessProb);
+        return new ProbabilisticDoubleInterval(lower, upper, correctnessProb, configKey);
     }
 
-    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb) {
-        this(lowerEstimate, upperEstimate, correctnessProb, false);
+    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, String keyString) {
+        this(lowerEstimate, upperEstimate, correctnessProb, false, keyString);
     }
 
-    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, boolean isOverride) {
+    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, boolean isOverride, String keyString) {
+        this.keyString = keyString;
         assert lowerEstimate <= upperEstimate : String.format("%f > %f, which is illegal.", lowerEstimate, upperEstimate);
         assert correctnessProb >= 0 && correctnessProb <= 1 : String.format("Illegal probability %f.", correctnessProb);
 
@@ -110,6 +110,10 @@ public class ProbabilisticDoubleInterval {
 
     public double getLowerEstimate() {
         return this.lowerEstimate;
+    }
+
+    public String getKeyString() {
+        return this.keyString;
     }
 
     public double getUpperEstimate() {
@@ -148,8 +152,8 @@ public class ProbabilisticDoubleInterval {
         return new ProbabilisticDoubleInterval(
                 this.getLowerEstimate() + that.getLowerEstimate(),
                 this.getUpperEstimate() + that.getUpperEstimate(),
-                Math.min(this.getCorrectnessProbability(), that.getCorrectnessProbability())
-        );
+                Math.min(this.getCorrectnessProbability(), that.getCorrectnessProbability()),
+                keyString);
     }
 
     @Override
@@ -185,8 +189,10 @@ public class ProbabilisticDoubleInterval {
 
     @Override
     public String toString() {
-        return String.format("(%,.2f..%,.2f ~ %.1f%%)",
+        String s = String.format("(%,.2f..%,.2f ~ %.1f%%)",
                 this.lowerEstimate, this.upperEstimate, this.correctnessProb * 100d);
+        String s2 = s.concat(" , selectKey: " + this.keyString);
+        return s2;
     }
 
 }

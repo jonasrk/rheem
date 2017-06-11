@@ -706,7 +706,7 @@ public class PlanImplementation {
             if (inputOperators.size() == 0) {
                 // If there is no input operator, only the cost of the current operator is returned
                 probalisticCost.add(this.optimizationContext.getOperatorContext(operator).getCostEstimate());
-                probalisticCost.add(new ProbabilisticDoubleInterval(0f, 0f, 0f));
+                probalisticCost.add(new ProbabilisticDoubleInterval(0f, 0f, 0f, ""));
                 squashedCost.add(this.optimizationContext.getOperatorContext(operator).getSquashedCostEstimate());
                 squashedCost.add(.0);
                 Tuple<List<ProbabilisticDoubleInterval>, List<Double>> returnedCost = new Tuple(probalisticCost, squashedCost);
@@ -733,8 +733,8 @@ public class PlanImplementation {
                 return returnedCost;
             } else {
                 // If multiple input operators, the cost returned is the max of input operators
-                ProbabilisticDoubleInterval maxControlProbabilistic = new ProbabilisticDoubleInterval(0f, 0f, 0f);
-                ProbabilisticDoubleInterval maxJunctionProbabilistic = new ProbabilisticDoubleInterval(0f, 0f, 0f);
+                ProbabilisticDoubleInterval maxControlProbabilistic = new ProbabilisticDoubleInterval(0f, 0f, 0f, "");
+                ProbabilisticDoubleInterval maxJunctionProbabilistic = new ProbabilisticDoubleInterval(0f, 0f, 0f, "");
 
                 double maxControlSquash = 0;
                 double maxJunctionSquash = 0;
@@ -779,8 +779,8 @@ public class PlanImplementation {
             // Handle the case of a control not defined in this.operators (exp: loop operators)
             double controlSquash = 0;
             double junctionSquash = 0;
-            ProbabilisticDoubleInterval controlProbabilistic = new ProbabilisticDoubleInterval(0f, 0f, 0f);
-            ProbabilisticDoubleInterval junctionProbabilistic = new ProbabilisticDoubleInterval(0f, 0f, 0f);
+            ProbabilisticDoubleInterval controlProbabilistic = new ProbabilisticDoubleInterval(0f, 0f, 0f, "");
+            ProbabilisticDoubleInterval junctionProbabilistic = new ProbabilisticDoubleInterval(0f, 0f, 0f, "");
 
             probalisticCost.add(controlProbabilistic);
             probalisticCost.add(junctionProbabilistic);

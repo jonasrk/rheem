@@ -119,7 +119,7 @@ package object api {
     new NestableLoadProfileEstimator(f, (in0: Long, in1: Long, out: Long) => 0L)
 
 
-  implicit def toInterval(double: Double): ProbabilisticDoubleInterval = new ProbabilisticDoubleInterval(double, double, .99)
+  implicit def toInterval(double: Double): ProbabilisticDoubleInterval = new ProbabilisticDoubleInterval(double, double, .99, "")
 
   implicit def createPlanBuilder(rheemContext: RheemContext): PlanBuilder = new PlanBuilder(rheemContext)
 

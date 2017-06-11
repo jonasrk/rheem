@@ -14,6 +14,10 @@ import java.util.Optional;
  * Test operator that exposes map-like behavior.
  */
 public class TestMapOperator<InputType, OutputType> extends UnaryToUnaryOperator<InputType, OutputType> {
+
+    public String getSelectKeyString(){
+        return "";
+    }
     /**
      * Creates a new instance.
      */

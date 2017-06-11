@@ -20,6 +20,10 @@ public class Subplan extends OperatorBase implements ActualOperator, CompositeOp
      */
     private final SlotMapping slotMapping = new SlotMapping();
 
+    public String getSelectKeyString(){
+        return "";
+    }
+
     /**
      * If this instance is a source or a sink, then the encapsulated source/sink {@link Operator}s are stored here.
      * Otherwise {@code null}.

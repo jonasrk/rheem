@@ -385,6 +385,10 @@ public abstract class OptimizationContext {
             return this.inputCardinalities[inputIndex];
         }
 
+        public String getSelectivityKey() {
+            return this.getOperator().getSelectKeyString();
+        }
+
         public boolean isInputMarked(int inputIndex) {
             return this.inputCardinalityMarkers[inputIndex];
         }

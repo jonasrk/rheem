@@ -41,6 +41,10 @@ public interface Operator {
         return this.getAllInputs().length;
     }
 
+    default String getSelectKeyString() {
+        return "";
+    };
+
     /**
      * @return the number of non-broadcast {@link InputSlot}s of this instance
      */

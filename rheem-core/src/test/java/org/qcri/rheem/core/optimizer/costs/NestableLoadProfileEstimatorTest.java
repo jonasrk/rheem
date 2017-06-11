@@ -161,6 +161,10 @@ public class NestableLoadProfileEstimatorTest {
 
     public static class SomeOperator extends UnaryToUnaryOperator<Object, Object> {
 
+        public String getSelectKeyString(){
+            return "";
+        }
+
         public int getNumIterations() {
             return 2;
         }

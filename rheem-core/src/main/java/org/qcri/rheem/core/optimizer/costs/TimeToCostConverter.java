@@ -37,7 +37,7 @@ public class TimeToCostConverter {
     public ProbabilisticDoubleInterval convert(TimeEstimate timeEstimate) {
         double lowerBound = this.fixCosts + this.costsPerMilli * timeEstimate.getLowerEstimate();
         double upperBound = this.fixCosts + this.costsPerMilli * timeEstimate.getUpperEstimate();
-        return new ProbabilisticDoubleInterval(lowerBound, upperBound, timeEstimate.getCorrectnessProbability());
+        return new ProbabilisticDoubleInterval(lowerBound, upperBound, timeEstimate.getCorrectnessProbability(), "");
     }
 
 
@@ -50,7 +50,7 @@ public class TimeToCostConverter {
     public ProbabilisticDoubleInterval convertWithoutFixCosts(TimeEstimate timeEstimate) {
         double lowerBound = this.costsPerMilli * timeEstimate.getLowerEstimate();
         double upperBound = this.costsPerMilli * timeEstimate.getUpperEstimate();
-        return new ProbabilisticDoubleInterval(lowerBound, upperBound, timeEstimate.getCorrectnessProbability());
+        return new ProbabilisticDoubleInterval(lowerBound, upperBound, timeEstimate.getCorrectnessProbability(), "");
     }
 
     /**

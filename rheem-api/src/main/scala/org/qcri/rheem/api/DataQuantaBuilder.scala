@@ -686,7 +686,7 @@ class FilterDataQuantaBuilder[T](inputDataQuanta: DataQuantaBuilder[_, T], udf: 
     * @return this instance
     */
   def withSelectivity(lowerEstimate: Double, upperEstimate: Double, confidence: Double) = {
-    this.selectivity = new ProbabilisticDoubleInterval(lowerEstimate, upperEstimate, confidence)
+    this.selectivity = new ProbabilisticDoubleInterval(lowerEstimate, upperEstimate, confidence, "")
     this
   }
 
@@ -815,7 +815,7 @@ class FlatMapDataQuantaBuilder[In, Out](inputDataQuanta: DataQuantaBuilder[_, In
     * @return this instance
     */
   def withSelectivity(lowerEstimate: Double, upperEstimate: Double, confidence: Double) = {
-    this.selectivity = new ProbabilisticDoubleInterval(lowerEstimate, upperEstimate, confidence)
+    this.selectivity = new ProbabilisticDoubleInterval(lowerEstimate, upperEstimate, confidence, "")
     this
   }
 
@@ -864,7 +864,7 @@ class MapPartitionsDataQuantaBuilder[In, Out](inputDataQuanta: DataQuantaBuilder
     * @return this instance
     */
   def withSelectivity(lowerEstimate: Double, upperEstimate: Double, confidence: Double) = {
-    this.selectivity = new ProbabilisticDoubleInterval(lowerEstimate, upperEstimate, confidence)
+    this.selectivity = new ProbabilisticDoubleInterval(lowerEstimate, upperEstimate, confidence, "")
     this
   }
 
