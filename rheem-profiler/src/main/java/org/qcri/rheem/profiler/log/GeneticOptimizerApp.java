@@ -294,7 +294,7 @@ public class GeneticOptimizerApp {
             System.exit(0);
         }
 
-        // Initialize form the configuration.
+        // Initialize from the configuration.
         long timeLimit = this.configuration.getLongProperty("rheem.profiler.ga.timelimit.ms", -1);
         long stopMillis = timeLimit > 0 ? System.currentTimeMillis() + timeLimit : -1L;
         int maxGen = (int) this.configuration.getLongProperty("rheem.profiler.ga.maxgenerations", 5000);
