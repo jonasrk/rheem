@@ -1,15 +1,22 @@
 package org.qcri.rheem.core.optimizer;
 
 import org.json.JSONObject;
+import org.qcri.rheem.core.api.Configuration;
 import org.qcri.rheem.core.api.exception.RheemException;
+import org.qcri.rheem.core.optimizer.costs.LoadProfileEstimators;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /***
  * An value representation that is capable of expressing uncertainty.
  * It addresses uncertainty by expressing estimates as intervals and assigning a probability of correctness (in [0, 1]).
  */
 public class ProbabilisticDoubleInterval {
+
+    private static final Logger logger = LoggerFactory.getLogger(LoadProfileEstimators.class);
 
     /**
      * Instance that basically represents the value {@code 0d}.
@@ -70,6 +77,24 @@ public class ProbabilisticDoubleInterval {
         this.lowerEstimate = lowerEstimate;
         this.upperEstimate = upperEstimate;
         this.isOverride = isOverride;
+    }
+
+
+    public static ProbabilisticDoubleInterval createFromSpecification(String configKey, Configuration configuration) {
+//        final LoadProfileEstimator cachedEstimator =
+//                configuration.getLoadProfileEstimatorCache().optionallyProvideFor(configKey).orElse(null);
+//        if (cachedEstimator != null) return cachedEstimator.copy(); // TODO JRK caching might be necessary
+
+        final Optional<String> optSpecification = configuration.getOptionalStringProperty(configKey);
+        if (optSpecification.isPresent()) {
+            final ProbabilisticDoubleInterval interval =
+                    ProbabilisticDoubleInterval.createFromSpecification(configKey, optSpecification.get());
+//            configuration.getLoadProfileEstimatorCache().set(configKey, estimator.copy());
+            return interval;
+        } else {
+            logger.warn("Could not find an selectivity specification associated with '{}'.", configuration);
+            return null;
+        }
     }
 
     public static ProbabilisticDoubleInterval createFromSpecification(String configKey, String specification) {

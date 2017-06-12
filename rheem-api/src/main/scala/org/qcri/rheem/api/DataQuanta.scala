@@ -133,8 +133,9 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
   def filter(udf: Out => Boolean,
              sqlUdf: String = null,
              selectivity: ProbabilisticDoubleInterval = null,
-             udfLoad: LoadProfileEstimator = null) =
-    filterJava(toSerializablePredicate(udf), sqlUdf, selectivity, udfLoad)
+             udfLoad: LoadProfileEstimator = null,
+             udfSelectivity: ProbabilisticDoubleInterval = null) =
+    filterJava(toSerializablePredicate(udf), sqlUdf, selectivity, udfLoad, udfSelectivity)
 
   /**
     * Feed this instance into a [[FilterOperator]].
@@ -148,9 +149,10 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
   def filterJava(udf: SerializablePredicate[Out],
                  sqlUdf: String = null,
                  selectivity: ProbabilisticDoubleInterval = null,
-                 udfLoad: LoadProfileEstimator = null): DataQuanta[Out] = {
+                 udfLoad: LoadProfileEstimator = null,
+                 udfSelectivity: ProbabilisticDoubleInterval = null): DataQuanta[Out] = {
     val filterOperator = new FilterOperator(new PredicateDescriptor(
-      udf, this.output.getType.getDataUnitType.toBasicDataUnitType, selectivity, udfLoad
+      udf, this.output.getType.getDataUnitType.toBasicDataUnitType, selectivity, udfLoad, udfSelectivity
     ).withSqlImplementation(sqlUdf))
     this.connectTo(filterOperator, 0)
     filterOperator
