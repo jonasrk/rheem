@@ -192,7 +192,7 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
                                     selectivity: ProbabilisticDoubleInterval = null,
                                     udfLoad: LoadProfileEstimator = null,
                                     udfSelectivity: ProbabilisticDoubleInterval = null): DataQuanta[NewOut] =
-    flatMapJava(toSerializableFlatteningFunction(udf), selectivity, udfLoad)
+    flatMapRepoJava(toSerializableFlatteningFunction(udf), selectivity, udfLoad, udfSelectivity)
 
   /**
     * Feed this instance into a [[FlatMapOperator]].

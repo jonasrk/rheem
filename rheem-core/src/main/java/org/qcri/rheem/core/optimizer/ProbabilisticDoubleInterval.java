@@ -191,8 +191,10 @@ public class ProbabilisticDoubleInterval {
     public String toString() {
         String s = String.format("(%,.2f..%,.2f ~ %.1f%%)",
                 this.lowerEstimate, this.upperEstimate, this.correctnessProb * 100d);
-        String s2 = s.concat(" , selectKey: " + this.keyString);
-        return s2;
+        if (this.keyString != null) {
+            s = s.concat(" , selectKey: " + this.keyString);
+        }
+        return s;
     }
 
 }

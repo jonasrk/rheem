@@ -73,7 +73,11 @@ public class FilterOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
     }
 
     public String getSelectKeyString(){
-        return this.getPredicateDescriptor().getSelectivityProfileEstimator().toString();
+        if (this.getPredicateDescriptor().getSelectivityProfileEstimator() != null){
+            return this.getPredicateDescriptor().getSelectivityProfileEstimator().toString();
+        } else {
+            return "";
+        }
     }
 
     @Override
