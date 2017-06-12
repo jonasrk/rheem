@@ -19,14 +19,16 @@ public abstract class FunctionDescriptor {
 
     private LoadProfileEstimator loadProfileEstimator;
     private ProbabilisticDoubleInterval udfSelectivity;
+    private String udfSelectivityKey;
 
     public FunctionDescriptor(LoadProfileEstimator loadProfileEstimator) {
         this.setLoadProfileEstimator(loadProfileEstimator);
     }
 
-    public FunctionDescriptor(LoadProfileEstimator loadProfileEstimator, ProbabilisticDoubleInterval udfSelectivity) {
+    public FunctionDescriptor(LoadProfileEstimator loadProfileEstimator, ProbabilisticDoubleInterval udfSelectivity, String udfSelectivityKey) {
         this.setLoadProfileEstimator(loadProfileEstimator);
         this.setUdfSelectivity(udfSelectivity);
+        this.setUdfSelectivityKey(udfSelectivityKey);
     }
 
     public void setLoadProfileEstimator(LoadProfileEstimator loadProfileEstimator) {
@@ -35,6 +37,10 @@ public abstract class FunctionDescriptor {
 
     public void setUdfSelectivity(ProbabilisticDoubleInterval udfSelectivity) {
         this.udfSelectivity = udfSelectivity;
+    }
+
+    public void setUdfSelectivityKey(String udfSelectivityKey) {
+        this.udfSelectivityKey = udfSelectivityKey;
     }
 
     public Optional<LoadProfileEstimator> getLoadProfileEstimator() {
@@ -46,7 +52,7 @@ public abstract class FunctionDescriptor {
     }
 
     public String getUdfSelectivityKeyString() {
-        return this.udfSelectivity.toString();
+        return this.udfSelectivityKey;
     }
 
     /**

@@ -78,8 +78,9 @@ public class FlatMapDescriptor<Input, Output> extends FunctionDescriptor {
                              BasicDataUnitType<Output> outputType,
                              ProbabilisticDoubleInterval selectivity,
                              LoadProfileEstimator loadProfileEstimator,
-                             ProbabilisticDoubleInterval udfSelectivity) {
-        super(loadProfileEstimator, udfSelectivity);
+                             ProbabilisticDoubleInterval udfSelectivity,
+                             String udfSelectivityKey) {
+        super(loadProfileEstimator, udfSelectivity, udfSelectivityKey);
         this.javaImplementation = javaImplementation;
         this.inputType = inputType;
         this.outputType = outputType;

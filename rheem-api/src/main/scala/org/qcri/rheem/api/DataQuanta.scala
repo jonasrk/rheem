@@ -134,8 +134,9 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
              sqlUdf: String = null,
              selectivity: ProbabilisticDoubleInterval = null,
              udfLoad: LoadProfileEstimator = null,
-             udfSelectivity: ProbabilisticDoubleInterval = null) =
-    filterJava(toSerializablePredicate(udf), sqlUdf, selectivity, udfLoad, udfSelectivity)
+             udfSelectivity: ProbabilisticDoubleInterval = null,
+             udfSelectivityKey: String = null) =
+    filterJava(toSerializablePredicate(udf), sqlUdf, selectivity, udfLoad, udfSelectivity, udfSelectivityKey)
 
   /**
     * Feed this instance into a [[FilterOperator]].
@@ -150,9 +151,10 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
                  sqlUdf: String = null,
                  selectivity: ProbabilisticDoubleInterval = null,
                  udfLoad: LoadProfileEstimator = null,
-                 udfSelectivity: ProbabilisticDoubleInterval = null): DataQuanta[Out] = {
+                 udfSelectivity: ProbabilisticDoubleInterval = null,
+                 udfSelectivityKey: String = null): DataQuanta[Out] = {
     val filterOperator = new FilterOperator(new PredicateDescriptor(
-      udf, this.output.getType.getDataUnitType.toBasicDataUnitType, selectivity, udfLoad, udfSelectivity
+      udf, this.output.getType.getDataUnitType.toBasicDataUnitType, selectivity, udfLoad, udfSelectivity, udfSelectivityKey
     ).withSqlImplementation(sqlUdf))
     this.connectTo(filterOperator, 0)
     filterOperator
@@ -169,8 +171,9 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
   def flatMap[NewOut: ClassTag](udf: Out => Iterable[NewOut],
                                 selectivity: ProbabilisticDoubleInterval = null,
                                 udfLoad: LoadProfileEstimator = null,
-                                udfSelectivity: ProbabilisticDoubleInterval = null): DataQuanta[NewOut] =
-    flatMapJava(toSerializableFlatteningFunction(udf), selectivity, udfLoad, udfSelectivity)
+                                udfSelectivity: ProbabilisticDoubleInterval = null,
+                                udfSelectivityKey: String = null): DataQuanta[NewOut] =
+    flatMapJava(toSerializableFlatteningFunction(udf), selectivity, udfLoad, udfSelectivity, udfSelectivityKey)
 
   /**
     * Feed this instance into a [[FlatMapOperator]].
@@ -183,9 +186,10 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
   def flatMapJava[NewOut: ClassTag](udf: SerializableFunction[Out, JavaIterable[NewOut]],
                                     selectivity: ProbabilisticDoubleInterval = null,
                                     udfLoad: LoadProfileEstimator = null,
-                                    udfSelectivity: ProbabilisticDoubleInterval = null): DataQuanta[NewOut] = {
+                                    udfSelectivity: ProbabilisticDoubleInterval = null,
+                                    udfSelectivityKey: String = null): DataQuanta[NewOut] = {
     val flatMapOperator = new FlatMapOperator(new FlatMapDescriptor(
-      udf, basicDataUnitType[Out], basicDataUnitType[NewOut], selectivity, udfLoad, udfSelectivity
+      udf, basicDataUnitType[Out], basicDataUnitType[NewOut], selectivity, udfLoad, udfSelectivity, udfSelectivityKey
     ))
     this.connectTo(flatMapOperator, 0)
     flatMapOperator
