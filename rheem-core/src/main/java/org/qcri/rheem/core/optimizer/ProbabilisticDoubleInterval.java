@@ -1,5 +1,8 @@
 package org.qcri.rheem.core.optimizer;
 
+import org.json.JSONObject;
+import org.qcri.rheem.core.api.exception.RheemException;
+
 import java.util.Objects;
 
 /***
@@ -30,6 +33,8 @@ public class ProbabilisticDoubleInterval {
      */
     private final boolean isOverride;
 
+    private final String keyString;
+
     /**
      * Creates a new instance with a zero-width interval and a confidence of {@code 1}.
      *
@@ -52,6 +57,44 @@ public class ProbabilisticDoubleInterval {
         this.lowerEstimate = lowerEstimate;
         this.upperEstimate = upperEstimate;
         this.isOverride = isOverride;
+
+        this.keyString = "";
+    }
+
+    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, boolean isOverride, String keyString) {
+        this.keyString = keyString;
+        assert lowerEstimate <= upperEstimate : String.format("%f > %f, which is illegal.", lowerEstimate, upperEstimate);
+        assert correctnessProb >= 0 && correctnessProb <= 1 : String.format("Illegal probability %f.", correctnessProb);
+
+        this.correctnessProb = correctnessProb;
+        this.lowerEstimate = lowerEstimate;
+        this.upperEstimate = upperEstimate;
+        this.isOverride = isOverride;
+    }
+
+    public static ProbabilisticDoubleInterval createFromSpecification(String configKey, String specification) {
+        try {
+            final JSONObject spec = new JSONObject(specification);
+            if (!spec.has("type") || "juel".equalsIgnoreCase(spec.getString("type"))) {
+                return createFromJuelSpecification(configKey, spec);
+            } else {
+                throw new RheemException(String.format("Unknown specification type: %s", spec.get("type")));
+            }
+        } catch (Exception e) {
+            throw new RheemException(String.format("Could not initialize from specification \"%s\".", specification), e);
+        }
+    }
+
+    public static ProbabilisticDoubleInterval createFromJuelSpecification(String configKey, JSONObject spec) {
+        double correctnessProb = spec.getDouble("p");
+        double lower = spec.getDouble("lower");
+        double upper = spec.getDouble("upper");
+
+        return new ProbabilisticDoubleInterval(lower, upper, correctnessProb, configKey);
+    }
+
+    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, String keyString) {
+        this(lowerEstimate, upperEstimate, correctnessProb, false, keyString);
     }
 
     public double getLowerEstimate() {
