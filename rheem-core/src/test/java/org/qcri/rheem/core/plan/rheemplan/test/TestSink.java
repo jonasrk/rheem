@@ -13,10 +13,6 @@ import java.util.Optional;
  */
 public class TestSink<T> extends UnarySink<T> {
 
-    public String getSelectKeyString(){
-        return "";
-    }
-
     public TestSink(DataSetType<T> inputType) {
         super(inputType);
     }

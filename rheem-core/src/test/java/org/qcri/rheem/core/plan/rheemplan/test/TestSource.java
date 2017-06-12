@@ -14,10 +14,6 @@ import java.util.Optional;
  */
 public class TestSource<T> extends UnarySource<T> {
 
-    public String getSelectKeyString(){
-        return "";
-    }
-
     private CardinalityEstimator cardinalityEstimator = new FixedSizeCardinalityEstimator(100);
 
     public TestSource(DataSetType outputType) {

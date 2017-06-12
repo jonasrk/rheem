@@ -16,10 +16,6 @@ import java.util.Optional;
  */
 public class TestLoopHead<T> extends OperatorBase implements LoopHeadOperator, ElementaryOperator {
 
-    public String getSelectKeyString(){
-        return "";
-    }
-
     private int numExpectedIterations;
 
     public TestLoopHead(Class<T> dataQuantumClass) {

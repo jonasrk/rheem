@@ -111,10 +111,6 @@ public class Operators {
             public <Payload, Return> Return accept(TopDownPlanVisitor<Payload, Return> visitor, OutputSlot<?> outputSlot, Payload payload) {
                 throw new RuntimeException("Slotless operator should not be traversed.");
             }
-
-            public String getSelectKeyString(){
-                return "";
-            }
         };
     }
 

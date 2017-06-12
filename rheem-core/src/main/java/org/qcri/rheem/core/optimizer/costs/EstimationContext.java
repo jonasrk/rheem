@@ -28,8 +28,6 @@ public interface EstimationContext {
      */
     CardinalityEstimate[] getOutputCardinalities();
 
-    String getSelectivityKey();
-
     /**
      * Retrieve a {@code double}-valued property in this context.
      *
@@ -75,8 +73,6 @@ public interface EstimationContext {
                     EstimationContext.this.getNumExecutions()
             );
 
-            private final String selectivityKey = "";
-
             @Override
             public CardinalityEstimate[] getInputCardinalities() {
                 return this.inputCardinalities;
@@ -86,9 +82,6 @@ public interface EstimationContext {
             public CardinalityEstimate[] getOutputCardinalities() {
                 return this.outputCardinalities;
             }
-
-            @Override
-            public String getSelectivityKey() { return  this.selectivityKey;}
 
             @Override
             public double getDoubleProperty(String propertyKey, double fallback) {
@@ -143,7 +136,6 @@ public interface EstimationContext {
                     .put("inCards", JsonSerializables.serializeAll(Arrays.asList(ctx.getInputCardinalities()), false))
                     .put("outCards", JsonSerializables.serializeAll(Arrays.asList(ctx.getOutputCardinalities()), false))
                     .put("executions", ctx.getNumExecutions())
-                    .put("selecitvityKey", ctx.getSelectivityKey())
                     .putOpt("properties", doubleProperties);
         }
 

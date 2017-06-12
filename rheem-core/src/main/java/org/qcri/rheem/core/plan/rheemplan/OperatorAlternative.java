@@ -23,10 +23,6 @@ public class OperatorAlternative extends OperatorBase implements CompositeOperat
      */
     private List<Alternative> alternatives = new LinkedList<>();
 
-    public String getSelectKeyString(){
-        return "";
-    }
-
     public static OperatorAlternative wrap(Operator startOperator, Operator endOperator) {
         if (startOperator != endOperator) {
             // TODO

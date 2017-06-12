@@ -35,7 +35,7 @@ public class PartialExecution {
     /**
      * {@link AtomicExecutionGroup}s captured by this instance.
      */
-    private final Collection<AtomicExecutionGroup>  atomicExecutionGroups;
+    private final Collection<AtomicExecutionGroup> atomicExecutionGroups;
 
     /**
      * Platforms initialized/involved this instance.
@@ -202,7 +202,6 @@ public class PartialExecution {
                             false,
                             new AtomicExecutionGroup.Serializer(this.configuration))
                     )
-//                    .put("estContext", pe.atomicExecutionGroups.iterator().next().getEstimationContext().operator.name)
                     .putOpt(
                             "initPlatforms",
                             JsonSerializables.serializeAll(pe.initializedPlatforms, true, Platform.jsonSerializer)

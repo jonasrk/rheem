@@ -314,11 +314,11 @@ public class Configuration {
                     new FunctionalKeyValueProvider<FunctionDescriptor, ProbabilisticDoubleInterval>(
                             functionDescriptor -> {
                                 if (functionDescriptor instanceof PredicateDescriptor) {
-                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d, "");
+                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
                                 } else if (functionDescriptor instanceof FlatMapDescriptor) {
-                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d, "");
+                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
                                 } else if (functionDescriptor instanceof MapPartitionsDescriptor) {
-                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d, "");
+                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
                                 } else {
                                     throw new RheemException("Cannot provide fallback selectivity for " + functionDescriptor);
                                 }
@@ -330,31 +330,14 @@ public class Configuration {
             KeyValueProvider<FunctionDescriptor, ProbabilisticDoubleInterval> builtInProvider =
                     new FunctionalKeyValueProvider<>(
                             fallbackProvider,
-                            functionDescriptor -> functionDescriptor.getSelectivityProfileEstimator()
+                            functionDescriptor -> FunctionDescriptor.getSelectivity(functionDescriptor).orElse(null)
                     );
-
-            //
-
-            // Built-in layer: let the PredicateDescriptor provide its selectivity from a configuration file.
-//            KeyValueProvider<FunctionDescriptor, LoadProfileEstimator> configProvider =
-//                    new FunctionalKeyValueProvider<>(
-//                            builtInProvider,
-//                            functionDescriptor -> functionDescriptor.getSelectivityProfileEstimator().orElse(null)
-//                    );
-
-            //
 
             // Customizable layer: Users can override manually.
             KeyValueProvider<FunctionDescriptor, ProbabilisticDoubleInterval> overrideProvider =
                     new MapBasedKeyValueProvider<>(builtInProvider);
 
             configuration.setUdfSelectivityProvider(overrideProvider);
-
-//            // Customizable layer: Users can override manually.
-//            KeyValueProvider<FunctionDescriptor, ProbabilisticDoubleInterval> overrideProvider =
-//                    new MapBasedKeyValueProvider<>(builtInProvider);
-//
-//            configuration.setFunctionLoadProfileEstimatorProvider(overrideProvider);
         }
     }
 

@@ -14,10 +14,6 @@ public class OperatorTest {
 
     public class Operator1 extends OperatorBase {
 
-        public String getSelectKeyString(){
-            return "";
-        }
-
         @EstimationContextProperty
         protected final double op1Property;
 

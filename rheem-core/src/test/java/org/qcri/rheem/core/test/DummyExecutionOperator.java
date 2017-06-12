@@ -17,10 +17,6 @@ import java.util.List;
  */
 public class DummyExecutionOperator extends OperatorBase implements ExecutionOperator {
 
-    public String getSelectKeyString(){
-        return "";
-    }
-
     public List<List<ChannelDescriptor>> supportedInputChannelDescriptors = new ArrayList<>();
 
     public List<List<ChannelDescriptor>> supportedOutputChannelDescriptors = new ArrayList<>();
