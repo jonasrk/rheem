@@ -330,7 +330,7 @@ public class Configuration {
             KeyValueProvider<FunctionDescriptor, ProbabilisticDoubleInterval> builtInProvider =
                     new FunctionalKeyValueProvider<>(
                             fallbackProvider,
-                            functionDescriptor -> FunctionDescriptor.getSelectivity(functionDescriptor).orElse(null)
+                            functionDescriptor -> functionDescriptor.getUdfSelectivity().orElse(null)
                     );
 
             // Customizable layer: Users can override manually.
