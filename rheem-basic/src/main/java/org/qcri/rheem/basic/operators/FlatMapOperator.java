@@ -67,6 +67,14 @@ public class FlatMapOperator<InputType, OutputType> extends UnaryToUnaryOperator
         return this.functionDescriptor;
     }
 
+    public String getSelectKeyString(){
+        if (this.getFunctionDescriptor().getUdfSelectivity() != null){
+            return this.getFunctionDescriptor().getUdfSelectivityKeyString();
+        } else {
+            return "";
+        }
+    }
+
     @Override
     public Optional<org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimator> createCardinalityEstimator(
             final int outputIndex,

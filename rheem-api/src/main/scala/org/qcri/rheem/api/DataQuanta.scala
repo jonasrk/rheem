@@ -185,7 +185,7 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
                                     udfLoad: LoadProfileEstimator = null,
                                     udfSelectivity: ProbabilisticDoubleInterval = null): DataQuanta[NewOut] = {
     val flatMapOperator = new FlatMapOperator(new FlatMapDescriptor(
-      udf, basicDataUnitType[Out], basicDataUnitType[NewOut], selectivity, udfLoad
+      udf, basicDataUnitType[Out], basicDataUnitType[NewOut], selectivity, udfLoad, udfSelectivity
     ))
     this.connectTo(flatMapOperator, 0)
     flatMapOperator

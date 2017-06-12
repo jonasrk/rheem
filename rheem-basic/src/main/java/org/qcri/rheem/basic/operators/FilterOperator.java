@@ -72,6 +72,14 @@ public class FilterOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
         return this.predicateDescriptor;
     }
 
+    public String getSelectKeyString(){
+        if (this.getPredicateDescriptor().getUdfSelectivity() != null){
+            return this.getPredicateDescriptor().getUdfSelectivityKeyString();
+        } else {
+            return "";
+        }
+    }
+
     @Override
     public Optional<org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimator> createCardinalityEstimator(
             final int outputIndex,

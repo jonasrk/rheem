@@ -45,6 +45,10 @@ public abstract class FunctionDescriptor {
         return Optional.ofNullable(this.udfSelectivity);
     }
 
+    public String getUdfSelectivityKeyString() {
+        return this.udfSelectivity.toString();
+    }
+
     /**
      * Utility method to retrieve the selectivity of a {@link FunctionDescriptor}
      *

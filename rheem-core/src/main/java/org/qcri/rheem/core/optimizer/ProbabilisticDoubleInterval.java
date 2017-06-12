@@ -199,8 +199,10 @@ public class ProbabilisticDoubleInterval {
 
     @Override
     public String toString() {
-        return String.format("(%,.2f..%,.2f ~ %.1f%%)",
+        String s = String.format("(%,.2f..%,.2f ~ %.1f%%)",
                 this.lowerEstimate, this.upperEstimate, this.correctnessProb * 100d);
+        s = s.concat(" selecitvityKey: " + this.keyString);
+        return s;
     }
 
 }
