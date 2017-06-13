@@ -55,52 +55,52 @@ public class CardinalityRepository {
      *                            possible accurate data
      */
     public void storeAll(ExecutionState executionState, OptimizationContext optimizationContext) {
-        this.logger.info("Storing cardinalities at {}.", this.repositoryPath);
-
-        executionState.getCardinalityMeasurements().forEach(
-                channelInstance -> {
-                    for (Slot<?> correspondingSlot : channelInstance.getChannel().getCorrespondingSlots()) {
-                        for (Slot<?> slot : OptimizationUtils.collectConnectedSlots(correspondingSlot)) {
-                            if (slot instanceof OutputSlot<?>) {
-                                OutputSlot<Object> outputSlot = ((OutputSlot<?>) slot).unchecked();
-                                final Operator operator = outputSlot.getOwner();
-                                if (!operator.isElementary() || operator.isSource()) {
-                                    continue;
-                                }
-                                final OptimizationContext.OperatorContext operatorContext = channelInstance.getProducerOperatorContext();
-                                if (operatorContext == null) {
-                                    // TODO: Handle cardinalities inside of loops.
-                                    this.logger.debug("Could not inject measured cardinality for {}: " +
-                                            "It is presumably a glue operator or inside of a loop.", operator);
-                                    continue;
-                                }
-                                Method methodToFind = null;
-                                try {
-                                    methodToFind = operatorContext.getOperator().getClass().getMethod("getInputUrl", (Class<?>[]) null);
-
-                                } catch (NoSuchMethodException | SecurityException e) {
-                                    // Your exception handling goes here
-                                }
-                                if (methodToFind == null) {
-                                    this.store(outputSlot, channelInstance.getMeasuredCardinality().getAsLong(), operatorContext);
-                                } else {
-                                    // Method found. You can invoke the method like
-                                    try {
-                                        String filename = (String) methodToFind.invoke(operatorContext.getOperator(), (Object[]) null);
-                                        this.storeWithFileName(outputSlot, channelInstance.getMeasuredCardinality().getAsLong(), operatorContext, filename);
-                                    } catch (java.lang.IllegalAccessException e) {
-                                        System.out.println(e);
-                                    } catch (java.lang.reflect.InvocationTargetException e) {
-                                        System.out.println(e);
-                                    }
-
-
-                                }
-                            }
-                        }
-                    }
-                });
-//        this.logger.warn("Cardinality repository currently disabled.");
+//        this.logger.info("Storing cardinalities at {}.", this.repositoryPath);
+//
+//        executionState.getCardinalityMeasurements().forEach(
+//                channelInstance -> {
+//                    for (Slot<?> correspondingSlot : channelInstance.getChannel().getCorrespondingSlots()) {
+//                        for (Slot<?> slot : OptimizationUtils.collectConnectedSlots(correspondingSlot)) {
+//                            if (slot instanceof OutputSlot<?>) {
+//                                OutputSlot<Object> outputSlot = ((OutputSlot<?>) slot).unchecked();
+//                                final Operator operator = outputSlot.getOwner();
+//                                if (!operator.isElementary() || operator.isSource()) {
+//                                    continue;
+//                                }
+//                                final OptimizationContext.OperatorContext operatorContext = channelInstance.getProducerOperatorContext();
+//                                if (operatorContext == null) {
+//                                    // TODO: Handle cardinalities inside of loops.
+//                                    this.logger.debug("Could not inject measured cardinality for {}: " +
+//                                            "It is presumably a glue operator or inside of a loop.", operator);
+//                                    continue;
+//                                }
+//                                Method methodToFind = null;
+//                                try {
+//                                    methodToFind = operatorContext.getOperator().getClass().getMethod("getInputUrl", (Class<?>[]) null);
+//
+//                                } catch (NoSuchMethodException | SecurityException e) {
+//                                    // Your exception handling goes here
+//                                }
+//                                if (methodToFind == null) {
+//                                    this.store(outputSlot, channelInstance.getMeasuredCardinality().getAsLong(), operatorContext);
+//                                } else {
+//                                    // Method found. You can invoke the method like
+//                                    try {
+//                                        String filename = (String) methodToFind.invoke(operatorContext.getOperator(), (Object[]) null);
+//                                        this.storeWithFileName(outputSlot, channelInstance.getMeasuredCardinality().getAsLong(), operatorContext, filename);
+//                                    } catch (java.lang.IllegalAccessException e) {
+//                                        System.out.println(e);
+//                                    } catch (java.lang.reflect.InvocationTargetException e) {
+//                                        System.out.println(e);
+//                                    }
+//
+//
+//                                }
+//                            }
+//                        }
+//                    }
+//                });
+        this.logger.warn("Cardinality repository currently disabled.");
 
     }
 
