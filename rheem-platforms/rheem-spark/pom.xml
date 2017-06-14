@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rheem-spark_2.11</artifactId>
+    <artifactId>rheem-spark_2.10</artifactId>
 
     <packaging>jar</packaging>
 
