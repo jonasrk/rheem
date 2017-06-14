@@ -296,8 +296,10 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
     */
   def reduceByKey[Key: ClassTag](keyUdf: Out => Key,
                                  udf: (Out, Out) => Out,
-                                 udfLoad: LoadProfileEstimator = null): DataQuanta[Out] =
-    reduceByKeyJava(toSerializableFunction(keyUdf), toSerializableBinaryOperator(udf), udfLoad)
+                                 udfLoad: LoadProfileEstimator = null,
+                                 udfSelectivity: ProbabilisticDoubleInterval = null,
+                                 udfSelectivityKey: String = null): DataQuanta[Out] =
+    reduceByKeyJava(toSerializableFunction(keyUdf), toSerializableBinaryOperator(udf), udfLoad, udfSelectivity, udfSelectivityKey)
 
   /**
     * Feed this instance into a [[ReduceByOperator]].
@@ -309,7 +311,9 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
     */
   def reduceByKeyJava[Key: ClassTag](keyUdf: SerializableFunction[Out, Key],
                                      udf: SerializableBinaryOperator[Out],
-                                     udfLoad: LoadProfileEstimator = null)
+                                     udfLoad: LoadProfileEstimator = null,
+                                     udfSelectivity: ProbabilisticDoubleInterval = null,
+                                     udfSelectivityKey: String = null)
   : DataQuanta[Out] = {
     val reduceByOperator = new ReduceByOperator(
       new TransformationDescriptor(keyUdf, basicDataUnitType[Out], basicDataUnitType[Key]),
