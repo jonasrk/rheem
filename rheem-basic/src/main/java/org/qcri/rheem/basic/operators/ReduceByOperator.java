@@ -81,6 +81,14 @@ public class ReduceByOperator<Type, Key> extends UnaryToUnaryOperator<Type, Type
         return this.reduceDescriptor;
     }
 
+    public String getSelectKeyString(){
+        if (this.getReduceDescriptor().getUdfSelectivity() != null){
+            return this.getReduceDescriptor().getUdfSelectivityKeyString();
+        } else {
+            return "";
+        }
+    }
+
 
     @Override
     public Optional<CardinalityEstimator> createCardinalityEstimator(

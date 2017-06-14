@@ -317,7 +317,7 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
   : DataQuanta[Out] = {
     val reduceByOperator = new ReduceByOperator(
       new TransformationDescriptor(keyUdf, basicDataUnitType[Out], basicDataUnitType[Key]),
-      new ReduceDescriptor(udf, groupedDataUnitType[Out], basicDataUnitType[Out], udfLoad)
+      new ReduceDescriptor(udf, groupedDataUnitType[Out], basicDataUnitType[Out], udfLoad, udfSelectivity, udfSelectivityKey)
     )
     this.connectTo(reduceByOperator, 0)
     reduceByOperator
