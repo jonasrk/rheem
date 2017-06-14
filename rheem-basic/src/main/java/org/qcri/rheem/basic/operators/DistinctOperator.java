@@ -2,6 +2,8 @@ package org.qcri.rheem.basic.operators;
 
 import org.apache.commons.lang3.Validate;
 import org.qcri.rheem.core.api.Configuration;
+import org.qcri.rheem.core.function.PredicateDescriptor;
+import org.qcri.rheem.core.optimizer.ProbabilisticDoubleInterval;
 import org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimator;
 import org.qcri.rheem.core.optimizer.cardinality.DefaultCardinalityEstimator;
 import org.qcri.rheem.core.plan.rheemplan.UnaryToUnaryOperator;
@@ -15,6 +17,8 @@ import java.util.Optional;
  */
 public class DistinctOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
 
+    protected final PredicateDescriptor<Type> predicateDescriptor;
+
 
     /**
      * Creates a new instance.
@@ -23,6 +27,12 @@ public class DistinctOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
      */
     public DistinctOperator(DataSetType<Type> type) {
         super(type, type, false);
+        this.predicateDescriptor = null;
+    }
+
+    public DistinctOperator(DataSetType<Type> type, PredicateDescriptor<Type> predicateDescriptor) {
+        super(type, type, false);
+        this.predicateDescriptor = predicateDescriptor;
     }
 
     /**
@@ -41,6 +51,19 @@ public class DistinctOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
      */
     public DistinctOperator(DistinctOperator<Type> that) {
         super(that);
+        this.predicateDescriptor = null;
+    }
+
+    public PredicateDescriptor<Type> getPredicateDescriptor() {
+        return this.predicateDescriptor;
+    }
+
+    public String getSelectKeyString(){
+        if (this.getPredicateDescriptor().getUdfSelectivity() != null){
+            return this.getPredicateDescriptor().getUdfSelectivityKeyString();
+        } else {
+            return "";
+        }
     }
 
     @Override

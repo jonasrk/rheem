@@ -70,6 +70,14 @@ public class PredicateDescriptor<Input> extends FunctionDescriptor {
         this.selectivity = selectivity;
     }
 
+    public PredicateDescriptor(BasicDataUnitType<Input> inputType,
+                               ProbabilisticDoubleInterval udfSelectivity,
+                               String udfSelectivityKey) {
+        super(udfSelectivity, udfSelectivityKey);
+        this.inputType = inputType;
+        this.javaImplementation = null;
+    }
+
     /**
      * This function is not built to last. It is thought to help out devising programs while we are still figuring
      * out how to express functions in a platform-independent way.

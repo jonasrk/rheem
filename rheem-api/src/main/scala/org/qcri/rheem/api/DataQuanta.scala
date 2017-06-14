@@ -559,6 +559,21 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
     distinctOperator
   }
 
+  def distinctJava(udfSelectivity: ProbabilisticDoubleInterval = null,
+                   udfSelectivityKey: String = null): DataQuanta[Out] = {
+    val distinctOperator = new DistinctOperator(dataSetType[Out], new PredicateDescriptor(
+      this.output.getType.getDataUnitType.toBasicDataUnitType, udfSelectivity, udfSelectivityKey
+    ))
+    this.connectTo(distinctOperator, 0)
+    distinctOperator
+  }
+
+  def distinct(udfSelectivity: ProbabilisticDoubleInterval = null,
+               udfSelectivityKey: String = null) = {
+    distinctJava(udfSelectivity, udfSelectivityKey)
+  }
+
+
   /**
     * Feeds this instance into a [[CountOperator]].
     *
