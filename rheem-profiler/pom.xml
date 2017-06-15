@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rheem-profiler_2.11</artifactId>
+    <artifactId>rheem-profiler_2.10</artifactId>
 
     <dependencies>
         <dependency>
@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>org.qcri.rheem</groupId>
-            <artifactId>rheem-spark_2.11</artifactId>
+            <artifactId>rheem-spark_2.10</artifactId>
             <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>org.qcri.rheem</groupId>
-            <artifactId>rheem-graphchi_2.11</artifactId>
+            <artifactId>rheem-graphchi_2.10</artifactId>
             <version>0.3.1-SNAPSHOT</version>
         </dependency>
         <dependency>
