@@ -396,12 +396,20 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
     * @param that the other instance to union with
     * @return a new instance representing the [[UnionAllOperator]]'s output
     */
-  def union(that: DataQuanta[Out]): DataQuanta[Out] = {
+  def union(that: DataQuanta[Out],
+            udfSelectivity: ProbabilisticDoubleInterval = null,
+            udfSelectivityKey: String = null): DataQuanta[Out] = {
     require(this.planBuilder eq that.planBuilder, s"$this and $that must use the same plan builders.")
-    val unionAllOperator = new UnionAllOperator(dataSetType[Out])
+    val unionAllOperator = new UnionAllOperator(dataSetType[Out], new PredicateDescriptor(
+      this.output.getType.getDataUnitType.toBasicDataUnitType, udfSelectivity, udfSelectivityKey
+    ))
     this.connectTo(unionAllOperator, 0)
     that.connectTo(unionAllOperator, 1)
     unionAllOperator
+  }
+
+  def union(that: DataQuanta[Out]): DataQuanta[Out] = {
+    union(that, null, null)
   }
 
   /**
