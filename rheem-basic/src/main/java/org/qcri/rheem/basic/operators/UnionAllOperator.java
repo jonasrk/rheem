@@ -31,6 +31,10 @@ public class UnionAllOperator<Type>
         this.predicateDescriptor = predicateDescriptor;
     }
 
+    public UnionAllOperator(DataSetType<Type> type) {
+        this(type, null);
+    }
+
     /**
      * Creates a new instance.
      *

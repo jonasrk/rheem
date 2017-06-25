@@ -408,6 +408,10 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
     unionAllOperator
   }
 
+  def union(that: DataQuanta[Out]): DataQuanta[Out] = {
+    union(that, null, null)
+  }
+
   /**
     * Feed this instance and a further instance into a [[IntersectOperator]].
     *
