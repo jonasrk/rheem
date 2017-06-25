@@ -85,6 +85,9 @@ public class ProbabilisticDoubleInterval {
 //                configuration.getLoadProfileEstimatorCache().optionallyProvideFor(configKey).orElse(null);
 //        if (cachedEstimator != null) return cachedEstimator.copy(); // TODO JRK caching might be necessary
 
+        String[] split = configKey.split("-");
+        configKey = split[0];
+
         final Optional<String> optSpecification = configuration.getOptionalStringProperty(configKey);
         if (optSpecification.isPresent()) {
             final ProbabilisticDoubleInterval interval =
@@ -98,6 +101,8 @@ public class ProbabilisticDoubleInterval {
     }
 
     public static ProbabilisticDoubleInterval createFromSpecification(String configKey, String specification) {
+        String[] split = configKey.split("-");
+        configKey = split[0];
         try {
             final JSONObject spec = new JSONObject(specification);
             if (!spec.has("type") || "juel".equalsIgnoreCase(spec.getString("type"))) {
