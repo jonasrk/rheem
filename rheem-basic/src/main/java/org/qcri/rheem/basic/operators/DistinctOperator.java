@@ -59,7 +59,7 @@ public class DistinctOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
     }
 
     public String getSelectKeyString(){
-        if (this.getPredicateDescriptor().getUdfSelectivity() != null){
+        if (this.getPredicateDescriptor() != null && this.getPredicateDescriptor().getUdfSelectivity() != null){
             return this.getPredicateDescriptor().getUdfSelectivityKeyString();
         } else {
             return "";
