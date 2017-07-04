@@ -441,6 +441,15 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
   : DataQuanta[org.qcri.rheem.basic.data.Tuple2[Out, ThatOut]] =
     joinJava(toSerializableFunction(thisKeyUdf), that, toSerializableFunction(thatKeyUdf))
 
+  def join[ThatOut: ClassTag, Key: ClassTag]
+  (thisKeyUdf: Out => Key,
+   that: DataQuanta[ThatOut],
+   thatKeyUdf: ThatOut => Key,
+   udfSelectivity: ProbabilisticDoubleInterval = null,
+   udfSelectivityKey: String = null)
+  : DataQuanta[org.qcri.rheem.basic.data.Tuple2[Out, ThatOut]] =
+    joinJava(toSerializableFunction(thisKeyUdf), that, toSerializableFunction(thatKeyUdf), udfSelectivity, udfSelectivityKey)
+
   /**
     * Feeds this and a further instance into a [[JoinOperator]].
     *
@@ -453,6 +462,23 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
   (thisKeyUdf: SerializableFunction[Out, Key],
    that: DataQuanta[ThatOut],
    thatKeyUdf: SerializableFunction[ThatOut, Key])
+  : DataQuanta[org.qcri.rheem.basic.data.Tuple2[Out, ThatOut]] = {
+    require(this.planBuilder eq that.planBuilder, s"$this and $that must use the same plan builders.")
+    val joinOperator = new JoinOperator(
+      new TransformationDescriptor(thisKeyUdf, basicDataUnitType[Out], basicDataUnitType[Key]),
+      new TransformationDescriptor(thatKeyUdf, basicDataUnitType[ThatOut], basicDataUnitType[Key])
+    )
+    this.connectTo(joinOperator, 0)
+    that.connectTo(joinOperator, 1)
+    joinOperator
+  }
+
+  def joinJava[ThatOut: ClassTag, Key: ClassTag]
+  (thisKeyUdf: SerializableFunction[Out, Key],
+   that: DataQuanta[ThatOut],
+   thatKeyUdf: SerializableFunction[ThatOut, Key],
+   udfSelectivity: ProbabilisticDoubleInterval = null,
+   udfSelectivityKey: String = null)
   : DataQuanta[org.qcri.rheem.basic.data.Tuple2[Out, ThatOut]] = {
     require(this.planBuilder eq that.planBuilder, s"$this and $that must use the same plan builders.")
     val joinOperator = new JoinOperator(

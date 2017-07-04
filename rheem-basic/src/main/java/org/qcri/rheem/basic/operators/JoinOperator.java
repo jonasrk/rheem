@@ -72,6 +72,14 @@ public class JoinOperator<InputType0, InputType1, Key>
         return this.keyDescriptor0;
     }
 
+    public String getSelectKeyString(){
+        if (this.getKeyDescriptor0().getUdfSelectivity() != null){
+            return this.getKeyDescriptor0().getUdfSelectivityKeyString();
+        } else {
+            return "";
+        }
+    }
+
     public TransformationDescriptor<InputType1, Key> getKeyDescriptor1() {
         return this.keyDescriptor1;
     }
