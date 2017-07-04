@@ -437,13 +437,6 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
   def join[ThatOut: ClassTag, Key: ClassTag]
   (thisKeyUdf: Out => Key,
    that: DataQuanta[ThatOut],
-   thatKeyUdf: ThatOut => Key)
-  : DataQuanta[org.qcri.rheem.basic.data.Tuple2[Out, ThatOut]] =
-    joinJava(toSerializableFunction(thisKeyUdf), that, toSerializableFunction(thatKeyUdf))
-
-  def join[ThatOut: ClassTag, Key: ClassTag]
-  (thisKeyUdf: Out => Key,
-   that: DataQuanta[ThatOut],
    thatKeyUdf: ThatOut => Key,
    udfSelectivity: ProbabilisticDoubleInterval = null,
    udfSelectivityKey: String = null)
