@@ -51,7 +51,7 @@ public class UnionAllOperator<Type>
      */
     public UnionAllOperator(UnionAllOperator<Type> that) {
         super(that);
-        this.predicateDescriptor = null;
+        this.predicateDescriptor = that.getPredicateDescriptor();
     }
 
     public PredicateDescriptor<Type> getPredicateDescriptor() {

@@ -51,7 +51,7 @@ public class DistinctOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
      */
     public DistinctOperator(DistinctOperator<Type> that) {
         super(that);
-        this.predicateDescriptor = null;
+        this.predicateDescriptor = that.getPredicateDescriptor();
     }
 
     public PredicateDescriptor<Type> getPredicateDescriptor() {
