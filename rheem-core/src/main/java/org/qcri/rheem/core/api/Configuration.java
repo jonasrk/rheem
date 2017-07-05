@@ -4,10 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.qcri.rheem.core.api.configuration.*;
 import org.qcri.rheem.core.api.exception.RheemException;
-import org.qcri.rheem.core.function.FlatMapDescriptor;
-import org.qcri.rheem.core.function.FunctionDescriptor;
-import org.qcri.rheem.core.function.MapPartitionsDescriptor;
-import org.qcri.rheem.core.function.PredicateDescriptor;
+import org.qcri.rheem.core.function.*;
 import org.qcri.rheem.core.mapping.Mapping;
 import org.qcri.rheem.core.optimizer.ProbabilisticDoubleInterval;
 import org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimate;
@@ -318,6 +315,8 @@ public class Configuration {
                                 } else if (functionDescriptor instanceof FlatMapDescriptor) {
                                     return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
                                 } else if (functionDescriptor instanceof MapPartitionsDescriptor) {
+                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
+                                } else if (functionDescriptor instanceof ReduceDescriptor) {
                                     return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
                                 } else {
                                     throw new RheemException("Cannot provide fallback selectivity for " + functionDescriptor);
