@@ -41,6 +41,7 @@ public class ProbabilisticDoubleInterval {
     private final boolean isOverride;
 
     private final String keyString;
+    private final double coeff;
 
     /**
      * Creates a new instance with a zero-width interval and a confidence of {@code 1}.
@@ -66,9 +67,10 @@ public class ProbabilisticDoubleInterval {
         this.isOverride = isOverride;
 
         this.keyString = "";
+        this.coeff = 0;
     }
 
-    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, boolean isOverride, String keyString) {
+    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, boolean isOverride, String keyString, double coeff) {
         this.keyString = keyString;
         assert lowerEstimate <= upperEstimate : String.format("%f > %f, which is illegal.", lowerEstimate, upperEstimate);
         assert correctnessProb >= 0 && correctnessProb <= 1 : String.format("Illegal probability %f.", correctnessProb);
@@ -77,6 +79,7 @@ public class ProbabilisticDoubleInterval {
         this.lowerEstimate = lowerEstimate;
         this.upperEstimate = upperEstimate;
         this.isOverride = isOverride;
+        this.coeff = coeff;
     }
 
 
@@ -119,12 +122,13 @@ public class ProbabilisticDoubleInterval {
         double correctnessProb = spec.getDouble("p");
         double lower = spec.getDouble("lower");
         double upper = spec.getDouble("upper");
+        double coeff = spec.getDouble("coeff");
 
-        return new ProbabilisticDoubleInterval(lower, upper, correctnessProb, configKey);
+        return new ProbabilisticDoubleInterval(lower, upper, correctnessProb, configKey, coeff);
     }
 
-    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, String keyString) {
-        this(lowerEstimate, upperEstimate, correctnessProb, false, keyString);
+    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, String keyString, double coeff) {
+        this(lowerEstimate, upperEstimate, correctnessProb, false, keyString, coeff);
     }
 
     public double getLowerEstimate() {
@@ -133,6 +137,10 @@ public class ProbabilisticDoubleInterval {
 
     public double getUpperEstimate() {
         return this.upperEstimate;
+    }
+
+    public double getCoeff() {
+        return this.coeff;
     }
 
     public double getAverageEstimate() {
