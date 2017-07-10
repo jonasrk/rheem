@@ -93,8 +93,14 @@ public class ProbabilisticDoubleInterval {
 
         final Optional<String> optSpecification = configuration.getOptionalStringProperty(configKey);
         if (optSpecification.isPresent()) {
-            final ProbabilisticDoubleInterval interval =
-                    ProbabilisticDoubleInterval.createFromSpecification(configKey, optSpecification.get());
+            final ProbabilisticDoubleInterval interval;
+            if (configuration.getBooleanProperty("rheem.profiler.sr.logistic") == true){
+                interval =
+                        ProbabilisticDoubleInterval.createFromSpecification(configKey, optSpecification.get(), true);
+            } else {
+                interval =
+                        ProbabilisticDoubleInterval.createFromSpecification(configKey, optSpecification.get(), false);
+            }
 //            configuration.getLoadProfileEstimatorCache().set(configKey, estimator.copy());
             return interval;
         } else {
@@ -103,13 +109,13 @@ public class ProbabilisticDoubleInterval {
         }
     }
 
-    public static ProbabilisticDoubleInterval createFromSpecification(String configKey, String specification) {
+    public static ProbabilisticDoubleInterval createFromSpecification(String configKey, String specification, Boolean logistic) {
         String[] split = configKey.split("-");
         configKey = split[0];
         try {
             final JSONObject spec = new JSONObject(specification);
             if (!spec.has("type") || "juel".equalsIgnoreCase(spec.getString("type"))) {
-                return createFromJuelSpecification(configKey, spec);
+                return createFromJuelSpecification(configKey, spec, logistic);
             } else {
                 throw new RheemException(String.format("Unknown specification type: %s", spec.get("type")));
             }
@@ -118,12 +124,12 @@ public class ProbabilisticDoubleInterval {
         }
     }
 
-    public static ProbabilisticDoubleInterval createFromJuelSpecification(String configKey, JSONObject spec) {
+    public static ProbabilisticDoubleInterval createFromJuelSpecification(String configKey, JSONObject spec, Boolean logistic) {
         double correctnessProb = spec.getDouble("p");
         double lower = spec.getDouble("lower");
         double upper = spec.getDouble("upper");
         Double coeff;
-        if ((Double)spec.getDouble("coeff") != null) {
+        if (logistic == true) {
             coeff = spec.getDouble("coeff");
         } else {
             coeff = 0.0;
