@@ -122,7 +122,12 @@ public class ProbabilisticDoubleInterval {
         double correctnessProb = spec.getDouble("p");
         double lower = spec.getDouble("lower");
         double upper = spec.getDouble("upper");
-        double coeff = spec.getDouble("coeff");
+        Double coeff;
+        if ((Double)spec.getDouble("coeff") != null) {
+            coeff = spec.getDouble("coeff");
+        } else {
+            coeff = 0.0;
+        }
 
         return new ProbabilisticDoubleInterval(lower, upper, correctnessProb, configKey, coeff);
     }
