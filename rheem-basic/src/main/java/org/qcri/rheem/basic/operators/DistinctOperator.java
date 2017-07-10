@@ -3,7 +3,9 @@ package org.qcri.rheem.basic.operators;
 import org.apache.commons.lang3.Validate;
 import org.qcri.rheem.core.api.Configuration;
 import org.qcri.rheem.core.function.PredicateDescriptor;
+import org.qcri.rheem.core.optimizer.OptimizationContext;
 import org.qcri.rheem.core.optimizer.ProbabilisticDoubleInterval;
+import org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimate;
 import org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimator;
 import org.qcri.rheem.core.optimizer.cardinality.DefaultCardinalityEstimator;
 import org.qcri.rheem.core.plan.rheemplan.UnaryToUnaryOperator;
@@ -66,14 +68,51 @@ public class DistinctOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
         }
     }
 
+
+//        // Assume with a confidence of 0.7 that 70% of the data quanta are pairwise distinct.
+//        return Optional.of(new DefaultCardinalityEstimator(0.7d, 1, this.isSupportingBroadcastInputs(),
+//                inputCards -> (long) (inputCards[0] * 0.7d))); // TODO JRK: Do not make baseline worse
+
+
+
     @Override
-    public Optional<CardinalityEstimator> createCardinalityEstimator(
+    public Optional<org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimator> createCardinalityEstimator(
             final int outputIndex,
             final Configuration configuration) {
         Validate.inclusiveBetween(0, this.getNumOutputs() - 1, outputIndex);
-        // TODO: Come up with a dynamic estimator.
-        // Assume with a confidence of 0.7 that 70% of the data quanta are pairwise distinct.
-        return Optional.of(new DefaultCardinalityEstimator(0.7d, 1, this.isSupportingBroadcastInputs(),
-                inputCards -> (long) (inputCards[0] * 0.7d)));
+        return Optional.of(new DistinctOperator.CardinalityEstimator(configuration));
+    }
+
+
+    private class CardinalityEstimator implements org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimator {
+
+        /**
+         * The expected selectivity to be applied in this instance.
+         */
+        private final ProbabilisticDoubleInterval selectivity;
+
+        public CardinalityEstimator(Configuration configuration) {
+            this.selectivity = configuration.getUdfSelectivityProvider().provideFor(DistinctOperator.this.predicateDescriptor);
+        }
+
+        @Override
+        public CardinalityEstimate estimate(OptimizationContext optimizationContext, CardinalityEstimate... inputEstimates) {
+            Validate.isTrue(inputEstimates.length == DistinctOperator.this.getNumInputs());
+            final CardinalityEstimate inputEstimate = inputEstimates[0];
+
+            if (this.selectivity.getCoeff() == 0) {
+                return new CardinalityEstimate(
+                        (long) (inputEstimate.getLowerEstimate() * this.selectivity.getLowerEstimate()),
+                        (long) (inputEstimate.getUpperEstimate() * this.selectivity.getUpperEstimate()),
+                        inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
+                );
+            } else {
+                return new CardinalityEstimate(
+                        (long) (inputEstimate.getLowerEstimate() * this.selectivity.getCoeff() * inputEstimate.getLowerEstimate()),
+                        (long) (inputEstimate.getUpperEstimate() * this.selectivity.getCoeff() * inputEstimate.getUpperEstimate()),
+                        inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
+                );
+            }
+        }
     }
 }

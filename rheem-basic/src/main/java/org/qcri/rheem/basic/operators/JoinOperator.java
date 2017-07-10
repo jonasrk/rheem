@@ -5,6 +5,9 @@ import org.qcri.rheem.basic.data.Tuple2;
 import org.qcri.rheem.core.api.Configuration;
 import org.qcri.rheem.core.function.FunctionDescriptor;
 import org.qcri.rheem.core.function.TransformationDescriptor;
+import org.qcri.rheem.core.optimizer.OptimizationContext;
+import org.qcri.rheem.core.optimizer.ProbabilisticDoubleInterval;
+import org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimate;
 import org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimator;
 import org.qcri.rheem.core.optimizer.cardinality.DefaultCardinalityEstimator;
 import org.qcri.rheem.core.plan.rheemplan.BinaryToUnaryOperator;
@@ -85,16 +88,62 @@ public class JoinOperator<InputType0, InputType1, Key>
     }
 
 
+//    @Override
+//    public Optional<CardinalityEstimator> createCardinalityEstimator(
+//            final int outputIndex,
+//            final Configuration configuration) {
+//        Validate.inclusiveBetween(0, this.getNumOutputs() - 1, outputIndex);
+//        // The current idea: We assume, we have a foreign-key like join
+//        // TODO: Find a better estimator.
+//        return Optional.of(new DefaultCardinalityEstimator(
+//                .5d, 2, this.isSupportingBroadcastInputs(),
+//                inputCards -> 3 * Math.max(inputCards[0], inputCards[1])
+//        ));
+//    }
+
+
+
+
+
     @Override
-    public Optional<CardinalityEstimator> createCardinalityEstimator(
+    public Optional<org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimator> createCardinalityEstimator(
             final int outputIndex,
             final Configuration configuration) {
         Validate.inclusiveBetween(0, this.getNumOutputs() - 1, outputIndex);
-        // The current idea: We assume, we have a foreign-key like join
-        // TODO: Find a better estimator.
-        return Optional.of(new DefaultCardinalityEstimator(
-                .5d, 2, this.isSupportingBroadcastInputs(),
-                inputCards -> 3 * Math.max(inputCards[0], inputCards[1])
-        ));
+        return Optional.of(new JoinOperator.CardinalityEstimator(configuration));
+    }
+
+
+    private class CardinalityEstimator implements org.qcri.rheem.core.optimizer.cardinality.CardinalityEstimator {
+
+        /**
+         * The expected selectivity to be applied in this instance.
+         */
+        private final ProbabilisticDoubleInterval selectivity;
+
+        public CardinalityEstimator(Configuration configuration) {
+            this.selectivity = configuration.getUdfSelectivityProvider().provideFor(JoinOperator.this.keyDescriptor0); // TODO JRK: What about the other one?
+        }
+
+        @Override
+        public CardinalityEstimate estimate(OptimizationContext optimizationContext, CardinalityEstimate... inputEstimates) {
+            Validate.isTrue(inputEstimates.length == JoinOperator.this.getNumInputs());
+            final CardinalityEstimate inputEstimate0 = inputEstimates[0];
+            final CardinalityEstimate inputEstimate1 = inputEstimates[0];
+
+            if (this.selectivity.getCoeff() == 0) {
+                return new CardinalityEstimate(
+                        (long) ((inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate()) * this.selectivity.getLowerEstimate()),
+                        (long) ((inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate()) * this.selectivity.getUpperEstimate()),
+                        inputEstimate0.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
+                );
+            } else {
+                return new CardinalityEstimate(
+                        (long) (Math.pow((inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate()), 2) * this.selectivity.getCoeff()),
+                        (long) (Math.pow((inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate()), 2) * this.selectivity.getCoeff()),
+                        inputEstimate0.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
+                );
+            }
+        }
     }
 }

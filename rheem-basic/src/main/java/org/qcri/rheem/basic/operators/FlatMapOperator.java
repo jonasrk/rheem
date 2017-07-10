@@ -103,11 +103,20 @@ public class FlatMapOperator<InputType, OutputType> extends UnaryToUnaryOperator
         public CardinalityEstimate estimate(OptimizationContext optimizationContext, CardinalityEstimate... inputEstimates) {
             assert FlatMapOperator.this.getNumInputs() == inputEstimates.length;
             final CardinalityEstimate inputEstimate = inputEstimates[0];
-            return new CardinalityEstimate(
-                    (long) (inputEstimate.getLowerEstimate() * this.selectivity.getLowerEstimate()),
-                    (long) (inputEstimate.getUpperEstimate() * this.selectivity.getUpperEstimate()),
-                    inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
-            );
+
+            if (this.selectivity.getCoeff() == 0) {
+                return new CardinalityEstimate(
+                        (long) (inputEstimate.getLowerEstimate() * this.selectivity.getLowerEstimate()),
+                        (long) (inputEstimate.getUpperEstimate() * this.selectivity.getUpperEstimate()),
+                        inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
+                );
+            } else {
+                return new CardinalityEstimate(
+                        (long) (inputEstimate.getLowerEstimate() * this.selectivity.getCoeff() * inputEstimate.getLowerEstimate()),
+                        (long) (inputEstimate.getUpperEstimate() * this.selectivity.getCoeff() * inputEstimate.getUpperEstimate()),
+                        inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
+                );
+            }
         }
     }
 }

@@ -318,6 +318,8 @@ public class Configuration {
                                     return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
                                 } else if (functionDescriptor instanceof ReduceDescriptor) {
                                     return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
+                                } else if (functionDescriptor instanceof TransformationDescriptor) { // TODO JRK: Do not make baseline worse
+                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
                                 } else {
                                     throw new RheemException("Cannot provide fallback selectivity for " + functionDescriptor);
                                 }
