@@ -112,8 +112,8 @@ public class FlatMapOperator<InputType, OutputType> extends UnaryToUnaryOperator
                 );
             } else {
                 return new CardinalityEstimate(
-                        (long) (inputEstimate.getLowerEstimate() * this.selectivity.getCoeff() * inputEstimate.getLowerEstimate()),
-                        (long) (inputEstimate.getUpperEstimate() * this.selectivity.getCoeff() * inputEstimate.getUpperEstimate()),
+                        (long) ((inputEstimate.getLowerEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getLowerEstimate()),
+                        (long) ((inputEstimate.getUpperEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getUpperEstimate()),
                         inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             }

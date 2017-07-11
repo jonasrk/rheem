@@ -139,8 +139,8 @@ public class JoinOperator<InputType0, InputType1, Key>
                 );
             } else {
                 return new CardinalityEstimate(
-                        (long) (Math.pow((inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate()), 2) * this.selectivity.getCoeff()),
-                        (long) (Math.pow((inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate()), 2) * this.selectivity.getCoeff()),
+                        (long) (((inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate()) * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * (inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate())),
+                        (long) (((inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate()) * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * (inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate())),
                         inputEstimate0.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             }
