@@ -129,7 +129,7 @@ public class JoinOperator<InputType0, InputType1, Key>
         public CardinalityEstimate estimate(OptimizationContext optimizationContext, CardinalityEstimate... inputEstimates) {
             Validate.isTrue(inputEstimates.length == JoinOperator.this.getNumInputs());
             final CardinalityEstimate inputEstimate0 = inputEstimates[0];
-            final CardinalityEstimate inputEstimate1 = inputEstimates[0];
+            final CardinalityEstimate inputEstimate1 = inputEstimates[1];
 
             if (this.selectivity.getCoeff() == 0) {
                 return new CardinalityEstimate(
