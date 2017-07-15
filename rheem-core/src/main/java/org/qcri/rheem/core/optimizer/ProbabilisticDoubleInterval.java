@@ -43,6 +43,9 @@ public class ProbabilisticDoubleInterval {
     private final String keyString;
     private final double coeff;
     private final double intercept;
+    private final double log_coeff;
+    private final double log_intercept;
+    private final String best;
 
     /**
      * Creates a new instance with a zero-width interval and a confidence of {@code 1}.
@@ -70,9 +73,12 @@ public class ProbabilisticDoubleInterval {
         this.keyString = "";
         this.coeff = 0;
         this.intercept = 0;
+        this.log_coeff = 0;
+        this.log_intercept = 0;
+        this.best = "";
     }
 
-    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, boolean isOverride, String keyString, double coeff, double intercept) {
+    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, boolean isOverride, String keyString, double coeff, double intercept, double log_coeff, double log_intercept, String best) {
         this.keyString = keyString;
         assert lowerEstimate <= upperEstimate : String.format("%f > %f, which is illegal.", lowerEstimate, upperEstimate);
         assert correctnessProb >= 0 && correctnessProb <= 1 : String.format("Illegal probability %f.", correctnessProb);
@@ -83,6 +89,9 @@ public class ProbabilisticDoubleInterval {
         this.isOverride = isOverride;
         this.coeff = coeff;
         this.intercept = intercept;
+        this.log_coeff = log_coeff;
+        this.log_intercept = log_intercept;
+        this.best = best;
     }
 
 
@@ -97,13 +106,7 @@ public class ProbabilisticDoubleInterval {
         final Optional<String> optSpecification = configuration.getOptionalStringProperty(configKey);
         if (optSpecification.isPresent()) {
             final ProbabilisticDoubleInterval interval;
-            if (configuration.getBooleanProperty("rheem.profiler.sr.logistic") == true){
-                interval =
-                        ProbabilisticDoubleInterval.createFromSpecification(configKey, optSpecification.get(), true);
-            } else {
-                interval =
-                        ProbabilisticDoubleInterval.createFromSpecification(configKey, optSpecification.get(), false);
-            }
+            interval = ProbabilisticDoubleInterval.createFromSpecification(configKey, optSpecification.get(), true);
 //            configuration.getLoadProfileEstimatorCache().set(configKey, estimator.copy());
             return interval;
         } else {
@@ -131,20 +134,18 @@ public class ProbabilisticDoubleInterval {
         double correctnessProb = spec.getDouble("p");
         double lower = spec.getDouble("lower");
         double upper = spec.getDouble("upper");
-        Double coeff, intercept;
-        if (logistic == true) {
-            coeff = spec.getDouble("coeff");
-            intercept = spec.getDouble("intercept");
-        } else {
-            coeff = 0.0;
-            intercept = 0.0;
-        }
+        double coeff = spec.getDouble("coeff");
+        double intercept = spec.getDouble("intercept");
+        double log_coeff = spec.getDouble("log_coeff");
+        double log_intercept = spec.getDouble("log_intercept");
+        String best = spec.getString("best");
 
-        return new ProbabilisticDoubleInterval(lower, upper, correctnessProb, configKey, coeff, intercept);
+
+        return new ProbabilisticDoubleInterval(lower, upper, correctnessProb, configKey, coeff, intercept, log_coeff, log_intercept, best);
     }
 
-    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, String keyString, double coeff, double intercept) {
-        this(lowerEstimate, upperEstimate, correctnessProb, false, keyString, coeff, intercept);
+    public ProbabilisticDoubleInterval(double lowerEstimate, double upperEstimate, double correctnessProb, String keyString, double coeff, double intercept, double log_coeff, double log_intercept, String best) {
+        this(lowerEstimate, upperEstimate, correctnessProb, false, keyString, coeff, intercept, log_coeff, log_intercept, best);
     }
 
     public double getLowerEstimate() {
@@ -161,6 +162,18 @@ public class ProbabilisticDoubleInterval {
 
     public double getIntercept() {
         return this.intercept;
+    }
+
+    public double getLog_coeff() {
+        return this.log_coeff;
+    }
+
+    public double getLog_intercept() {
+        return this.log_intercept;
+    }
+
+    public String getBest() {
+        return this.best;
     }
 
     public double getAverageEstimate() {

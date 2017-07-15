@@ -104,16 +104,22 @@ public class FlatMapOperator<InputType, OutputType> extends UnaryToUnaryOperator
             assert FlatMapOperator.this.getNumInputs() == inputEstimates.length;
             final CardinalityEstimate inputEstimate = inputEstimates[0];
 
-            if (this.selectivity.getCoeff() == 0) {
+            if (this.selectivity.getBest().equals("lin")) {
                 return new CardinalityEstimate(
-                        (long) (inputEstimate.getLowerEstimate() * this.selectivity.getLowerEstimate()),
-                        (long) (inputEstimate.getUpperEstimate() * this.selectivity.getUpperEstimate()),
+                        (long) ((inputEstimate.getLowerEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getLowerEstimate()),
+                        (long) ((inputEstimate.getUpperEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getUpperEstimate()),
+                        inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
+                );
+            } else if (this.selectivity.getBest().equals("log")) {
+                return new CardinalityEstimate(
+                        (long) ((Math.log(inputEstimate.getLowerEstimate()) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * inputEstimate.getLowerEstimate()),
+                        (long) ((Math.log(inputEstimate.getUpperEstimate()) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * inputEstimate.getUpperEstimate()),
                         inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             } else {
                 return new CardinalityEstimate(
-                        (long) ((inputEstimate.getLowerEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getLowerEstimate()),
-                        (long) ((inputEstimate.getUpperEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getUpperEstimate()),
+                        (long) (inputEstimate.getLowerEstimate() * this.selectivity.getLowerEstimate()),
+                        (long) (inputEstimate.getUpperEstimate() * this.selectivity.getUpperEstimate()),
                         inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             }
