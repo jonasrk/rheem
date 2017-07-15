@@ -120,9 +120,11 @@ public class JoinOperator<InputType0, InputType1, Key>
          * The expected selectivity to be applied in this instance.
          */
         private final ProbabilisticDoubleInterval selectivity;
+        Configuration configuration;
 
         public CardinalityEstimator(Configuration configuration) {
             this.selectivity = configuration.getUdfSelectivityProvider().provideFor(JoinOperator.this.keyDescriptor0); // TODO JRK: What about the other one?
+            this.configuration = configuration;
         }
 
         @Override
@@ -131,13 +133,18 @@ public class JoinOperator<InputType0, InputType1, Key>
             final CardinalityEstimate inputEstimate0 = inputEstimates[0];
             final CardinalityEstimate inputEstimate1 = inputEstimates[1];
 
-                if (this.selectivity.getBest().equals("lin")) {
+            String mode = this.configuration.getStringProperty("rheem.optimizer.sr.mode", "best");
+            if (mode.equals("best")){
+                mode = this.selectivity.getBest();
+            }
+
+                if (mode.equals("lin")) {
                 return new CardinalityEstimate(
                         (long) (((inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate()) * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * (inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate())),
                         (long) (((inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate()) * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * (inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate())),
                         inputEstimate0.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
-            } else if (this.selectivity.getBest().equals("log")) {
+            } else if (mode.equals("log")) {
                 return new CardinalityEstimate(
                         (long) ((Math.log((inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate())) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * (inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate())),
                         (long) ((Math.log((inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate())) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * (inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate())),

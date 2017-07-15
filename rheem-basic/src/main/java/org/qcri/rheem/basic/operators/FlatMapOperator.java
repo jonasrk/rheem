@@ -92,11 +92,13 @@ public class FlatMapOperator<InputType, OutputType> extends UnaryToUnaryOperator
          * The selectivity of this instance.
          */
         private final ProbabilisticDoubleInterval selectivity;
+        Configuration configuration;
 
         private CardinalityEstimator(Configuration configuration) {
             this.selectivity = configuration
                     .getUdfSelectivityProvider()
                     .provideFor(FlatMapOperator.this.functionDescriptor);
+            this.configuration = configuration;
         }
 
         @Override
@@ -104,13 +106,18 @@ public class FlatMapOperator<InputType, OutputType> extends UnaryToUnaryOperator
             assert FlatMapOperator.this.getNumInputs() == inputEstimates.length;
             final CardinalityEstimate inputEstimate = inputEstimates[0];
 
-            if (this.selectivity.getBest().equals("lin")) {
+            String mode = this.configuration.getStringProperty("rheem.optimizer.sr.mode", "best");
+            if (mode.equals("best")){
+                mode = this.selectivity.getBest();
+            }
+
+            if (mode.equals("lin")) {
                 return new CardinalityEstimate(
                         (long) ((inputEstimate.getLowerEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getLowerEstimate()),
                         (long) ((inputEstimate.getUpperEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getUpperEstimate()),
                         inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
-            } else if (this.selectivity.getBest().equals("log")) {
+            } else if (mode.equals("log")) {
                 return new CardinalityEstimate(
                         (long) ((Math.log(inputEstimate.getLowerEstimate()) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * inputEstimate.getLowerEstimate()),
                         (long) ((Math.log(inputEstimate.getUpperEstimate()) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * inputEstimate.getUpperEstimate()),
