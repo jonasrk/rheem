@@ -124,10 +124,10 @@ public class ReduceByOperator<Type, Key> extends UnaryToUnaryOperator<Type, Type
 
             //3
 
-            String mode = this.configuration.getStringProperty("rheem.optimizer.sr.mode", "best");
-            if (mode.equals("best")){
-                mode = this.selectivity.getBest();
-            }
+                String mode = this.configuration.getStringProperty("rheem.optimizer.sr.mode", "best");
+                if (mode.equals("best")){
+                    mode = this.selectivity.getBest();
+                }
 
 
 

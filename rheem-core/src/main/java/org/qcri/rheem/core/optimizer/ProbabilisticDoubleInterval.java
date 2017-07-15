@@ -106,7 +106,8 @@ public class ProbabilisticDoubleInterval {
         final Optional<String> optSpecification = configuration.getOptionalStringProperty(configKey);
         if (optSpecification.isPresent()) {
             final ProbabilisticDoubleInterval interval;
-            interval = ProbabilisticDoubleInterval.createFromSpecification(configKey, optSpecification.get(), true);
+            String mode = configuration.getStringProperty("rheem.optimizer.sr.mode", "best");
+            interval = ProbabilisticDoubleInterval.createFromSpecification(configKey, optSpecification.get(), mode);
 //            configuration.getLoadProfileEstimatorCache().set(configKey, estimator.copy());
             return interval;
         } else {
@@ -115,13 +116,13 @@ public class ProbabilisticDoubleInterval {
         }
     }
 
-    public static ProbabilisticDoubleInterval createFromSpecification(String configKey, String specification, Boolean logistic) {
+    public static ProbabilisticDoubleInterval createFromSpecification(String configKey, String specification, String mode) {
         String[] split = configKey.split("-");
         configKey = split[0];
         try {
             final JSONObject spec = new JSONObject(specification);
             if (!spec.has("type") || "juel".equalsIgnoreCase(spec.getString("type"))) {
-                return createFromJuelSpecification(configKey, spec, logistic);
+                return createFromJuelSpecification(configKey, spec, mode);
             } else {
                 throw new RheemException(String.format("Unknown specification type: %s", spec.get("type")));
             }
@@ -130,7 +131,7 @@ public class ProbabilisticDoubleInterval {
         }
     }
 
-    public static ProbabilisticDoubleInterval createFromJuelSpecification(String configKey, JSONObject spec, Boolean logistic) {
+    public static ProbabilisticDoubleInterval createFromJuelSpecification(String configKey, JSONObject spec, String mode) {
         double correctnessProb = spec.getDouble("p");
         double lower = spec.getDouble("lower");
         double upper = spec.getDouble("upper");
@@ -138,7 +139,12 @@ public class ProbabilisticDoubleInterval {
         double intercept = spec.getDouble("intercept");
         double log_coeff = spec.getDouble("log_coeff");
         double log_intercept = spec.getDouble("log_intercept");
-        String best = spec.getString("best");
+        String best;
+        if (mode.equals("best")) {
+            best = spec.getString("best");
+        } else {
+            best = mode;
+        }
 
 
         return new ProbabilisticDoubleInterval(lower, upper, correctnessProb, configKey, coeff, intercept, log_coeff, log_intercept, best);
