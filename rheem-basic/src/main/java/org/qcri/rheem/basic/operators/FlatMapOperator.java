@@ -113,20 +113,20 @@ public class FlatMapOperator<InputType, OutputType> extends UnaryToUnaryOperator
 
             if (mode.equals("lin")) {
                 return new CardinalityEstimate(
-                        (long) ((inputEstimate.getLowerEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getLowerEstimate()),
-                        (long) ((inputEstimate.getUpperEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getUpperEstimate()),
+                        (long) Math.max(0, ((inputEstimate.getLowerEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getLowerEstimate())),
+                        (long) Math.max(0, ((inputEstimate.getUpperEstimate() * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * inputEstimate.getUpperEstimate())),
                         inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             } else if (mode.equals("log")) {
                 return new CardinalityEstimate(
-                        (long) ((Math.log(inputEstimate.getLowerEstimate()) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * inputEstimate.getLowerEstimate()),
-                        (long) ((Math.log(inputEstimate.getUpperEstimate()) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * inputEstimate.getUpperEstimate()),
+                        (long) Math.max(0, ((Math.log(inputEstimate.getLowerEstimate()) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * inputEstimate.getLowerEstimate())),
+                        (long) Math.max(0, ((Math.log(inputEstimate.getUpperEstimate()) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * inputEstimate.getUpperEstimate())),
                         inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             } else {
                 return new CardinalityEstimate(
-                        (long) (inputEstimate.getLowerEstimate() * this.selectivity.getLowerEstimate()),
-                        (long) (inputEstimate.getUpperEstimate() * this.selectivity.getUpperEstimate()),
+                        (long) Math.max(0, (inputEstimate.getLowerEstimate() * this.selectivity.getLowerEstimate())),
+                        (long) Math.max(0, (inputEstimate.getUpperEstimate() * this.selectivity.getUpperEstimate())),
                         inputEstimate.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             }

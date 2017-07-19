@@ -588,7 +588,7 @@ class DataQuanta[Out: ClassTag](val operator: ElementaryOperator, outputIndex: I
 
   def distinctJava(udfSelectivity: ProbabilisticDoubleInterval = null,
                    udfSelectivityKey: String = null): DataQuanta[Out] = {
-    val distinctOperator = new DistinctOperator(dataSetType[Out], new PredicateDescriptor(
+    val distinctOperator = new DistinctOperator(dataSetType[Out], new DistinctPredicateDescriptor(
       this.output.getType.getDataUnitType.toBasicDataUnitType, udfSelectivity, udfSelectivityKey
     ))
     this.connectTo(distinctOperator, 0)

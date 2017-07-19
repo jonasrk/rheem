@@ -142,20 +142,20 @@ public class JoinOperator<InputType0, InputType1, Key>
 
                 if (mode.equals("lin")) {
                 return new CardinalityEstimate(
-                        (long) ((max_lower_estimate * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * max_lower_estimate),
-                        (long) ((max_upper_estimate * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * max_upper_estimate),
+                        (long) Math.max(0, ((max_lower_estimate * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * max_lower_estimate)),
+                        (long) Math.max(0, ((max_upper_estimate * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * max_upper_estimate)),
                         inputEstimate0.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             } else if (mode.equals("log")) {
                 return new CardinalityEstimate(
-                        (long) ((Math.log(max_lower_estimate) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * max_lower_estimate),
-                        (long) ((Math.log(max_upper_estimate) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * max_upper_estimate),
+                        (long) Math.max(0, ((Math.log(max_lower_estimate) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * max_lower_estimate)),
+                        (long) Math.max(0, ((Math.log(max_upper_estimate) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * max_upper_estimate)),
                         inputEstimate0.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             } else {
                 return new CardinalityEstimate(
-                        (long) (max_lower_estimate * this.selectivity.getLowerEstimate()),
-                        (long) (max_upper_estimate * this.selectivity.getUpperEstimate()),
+                        (long) Math.max(0, (max_lower_estimate * this.selectivity.getLowerEstimate())),
+                        (long) Math.max(0, (max_upper_estimate * this.selectivity.getUpperEstimate())),
                         inputEstimate0.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             }
