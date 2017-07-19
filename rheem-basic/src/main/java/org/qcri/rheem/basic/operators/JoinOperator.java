@@ -132,6 +132,8 @@ public class JoinOperator<InputType0, InputType1, Key>
             Validate.isTrue(inputEstimates.length == JoinOperator.this.getNumInputs());
             final CardinalityEstimate inputEstimate0 = inputEstimates[0];
             final CardinalityEstimate inputEstimate1 = inputEstimates[1];
+            final double max_lower_estimate =  Math.max(inputEstimate0.getLowerEstimate(), inputEstimate1.getLowerEstimate());
+            final double max_upper_estimate =  Math.max(inputEstimate0.getUpperEstimate(), inputEstimate1.getUpperEstimate());
 
             String mode = this.configuration.getStringProperty("rheem.optimizer.sr.mode", "best");
             if (mode.equals("best")){
@@ -140,20 +142,20 @@ public class JoinOperator<InputType0, InputType1, Key>
 
                 if (mode.equals("lin")) {
                 return new CardinalityEstimate(
-                        (long) (((inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate()) * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * (inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate())),
-                        (long) (((inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate()) * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * (inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate())),
+                        (long) ((max_lower_estimate * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * max_lower_estimate),
+                        (long) ((max_upper_estimate * this.selectivity.getCoeff() + this.selectivity.getIntercept()) * max_upper_estimate),
                         inputEstimate0.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             } else if (mode.equals("log")) {
                 return new CardinalityEstimate(
-                        (long) ((Math.log((inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate())) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * (inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate())),
-                        (long) ((Math.log((inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate())) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * (inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate())),
+                        (long) ((Math.log(max_lower_estimate) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * max_lower_estimate),
+                        (long) ((Math.log(max_upper_estimate) * this.selectivity.getLog_coeff() + this.selectivity.getLog_intercept()) * max_upper_estimate),
                         inputEstimate0.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             } else {
                 return new CardinalityEstimate(
-                        (long) ((inputEstimate0.getLowerEstimate() + inputEstimate1.getLowerEstimate()) * this.selectivity.getLowerEstimate()),
-                        (long) ((inputEstimate0.getUpperEstimate() + inputEstimate1.getUpperEstimate()) * this.selectivity.getUpperEstimate()),
+                        (long) (max_lower_estimate * this.selectivity.getLowerEstimate()),
+                        (long) (max_upper_estimate * this.selectivity.getUpperEstimate()),
                         inputEstimate0.getCorrectnessProbability() * this.selectivity.getCorrectnessProbability()
                 );
             }

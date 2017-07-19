@@ -2,6 +2,7 @@ package org.qcri.rheem.basic.operators;
 
 import org.apache.commons.lang3.Validate;
 import org.qcri.rheem.core.api.Configuration;
+import org.qcri.rheem.core.function.DistinctPredicateDescriptor;
 import org.qcri.rheem.core.function.PredicateDescriptor;
 import org.qcri.rheem.core.optimizer.OptimizationContext;
 import org.qcri.rheem.core.optimizer.ProbabilisticDoubleInterval;
@@ -19,7 +20,7 @@ import java.util.Optional;
  */
 public class DistinctOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
 
-    protected final PredicateDescriptor<Type> predicateDescriptor;
+    protected final DistinctPredicateDescriptor<Type> predicateDescriptor;
 
 
     /**
@@ -32,7 +33,7 @@ public class DistinctOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
         this.predicateDescriptor = null;
     }
 
-    public DistinctOperator(DataSetType<Type> type, PredicateDescriptor<Type> predicateDescriptor) {
+    public DistinctOperator(DataSetType<Type> type, DistinctPredicateDescriptor<Type> predicateDescriptor) {
         super(type, type, false);
         this.predicateDescriptor = predicateDescriptor;
     }
@@ -56,7 +57,7 @@ public class DistinctOperator<Type> extends UnaryToUnaryOperator<Type, Type> {
         this.predicateDescriptor = that.getPredicateDescriptor();
     }
 
-    public PredicateDescriptor<Type> getPredicateDescriptor() {
+    public DistinctPredicateDescriptor<Type> getPredicateDescriptor() {
         return this.predicateDescriptor;
     }
 

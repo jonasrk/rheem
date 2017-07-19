@@ -312,6 +312,8 @@ public class Configuration {
                             functionDescriptor -> {
                                 if (functionDescriptor instanceof PredicateDescriptor) {
                                     return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
+                                } else if (functionDescriptor instanceof DistinctPredicateDescriptor) {
+                                    return new ProbabilisticDoubleInterval(0.7, 0.7, 0.9d);
                                 } else if (functionDescriptor instanceof FlatMapDescriptor) {
                                     return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
                                 } else if (functionDescriptor instanceof MapPartitionsDescriptor) {
@@ -319,7 +321,7 @@ public class Configuration {
                                 } else if (functionDescriptor instanceof ReduceDescriptor) {
                                     return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
                                 } else if (functionDescriptor instanceof TransformationDescriptor) { // TODO JRK: Do not make baseline worse
-                                    return new ProbabilisticDoubleInterval(0.1, 1, 0.9d);
+                                    return new ProbabilisticDoubleInterval(3, 3, 0.9d);
                                 } else {
                                     throw new RheemException("Cannot provide fallback selectivity for " + functionDescriptor);
                                 }
