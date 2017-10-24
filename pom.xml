@@ -8,9 +8,9 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <encoding>UTF-8</encoding>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <scala.version>2.11.0</scala.version>
+        <scala.version>2.11.8</scala.version>
         <scala.compat.version>2.11</scala.compat.version>
-        <spark.version>1.6.3</spark.version>
+        <spark.version>1.6.0</spark.version>
         <!-- This Hadoop version is enforced by Spark in the version that is deployed in the Maven repository via code signing. -->
         <hadoop.version>2.2.0</hadoop.version>
         <graphchi.version>0.2.2</graphchi.version>
@@ -311,6 +311,7 @@
                         <artifactId>slf4j-log4j12</artifactId>
                     </exclusion>
                 </exclusions>
+                <scope>${external.platforms.scope}</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
@@ -322,6 +323,7 @@
                         <artifactId>slf4j-log4j12</artifactId>
                     </exclusion>
                 </exclusions>
+                <scope>${external.platforms.scope}</scope>
             </dependency>
 
             <!-- Apache Flink -->
